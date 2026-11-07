@@ -1,11 +1,22 @@
-public void registerCustomer() {
-    // customer registration
-}
+public class Customer {
 
-public void displayCustomerInfo(){
-    // display customer info
-}
+    String name;
+    String contactNumber;
+    String address;
+    String deliveryMode;
 
-public void checkAccount(){
-    // check existing user account
+    // TODO: Customer registration
+    public void registerCustomer() {
+
+    }
+
+    // TODO: Display customer information
+    public void displayCustomerInfo() {
+
+    }
+
+    // TODO: Check existing customer account
+    public void checkAccount() {
+
+    }
 }
