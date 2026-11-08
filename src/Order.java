@@ -133,7 +133,13 @@ public class Order {
 
     // TODO: Calculate total cost
     public void calculateTotal() {
-
+        totalAmount = 0;
+        for (int i = 0; i < selectedItems.length; i++) {
+            if (selectedItems[i] != -1) {
+                int itemIndex = selectedItems[i];
+                totalAmount += menu.prices[itemIndex] * quantities[i];
+            }
+        }
     }
 
     // TODO: Display order summary
