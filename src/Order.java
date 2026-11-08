@@ -144,6 +144,15 @@ public class Order {
 
     // TODO: Display order summary
     public void displayOrderSummary() {
+        System.out.println("\n[ORDER SUMMARY]");
+        for (int i = 0; i < selectedItems.length; i++) {
+            if (selectedItems[i] != -1) {
+                int itemIndex = selectedItems[i];
+                System.out.println(menu.foodNames[itemIndex] + " x " + quantities[i] + " = PHP " + (menu.prices[itemIndex] * quantities[i]));
+            }
+        }
 
+        System.out.println("-----------------------------------------");
+        System.out.println("Total Amount: PHP " + totalAmount);
     }
 }
