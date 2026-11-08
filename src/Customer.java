@@ -15,7 +15,7 @@ public class Customer {
         this.phone = phone;
     }
 
-    public static Customer registration() {
+    public static Customer customerRegistration() {
         Scanner input = new Scanner(System.in);
         System.out.println("============================");
         System.out.println("    ACCOUNT REGISTRATION    ");
@@ -52,7 +52,7 @@ public class Customer {
         return new Customer(customerId, name, email, phone, address);
     }
 
-    public void displayProfile() {
+    public void customerDisplayProfile() {
         System.out.println("Customer ID : " + customerId);
         System.out.println("Full Name   : " + name);
         System.out.println("Email       : " + email);
