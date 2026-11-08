@@ -49,10 +49,13 @@ public class Customer {
         String customerId ="00" + (int) (Math.random() *10);
 
         System.out.println("Successfully created account!");
-        return new Customer(customerId, name, email, phone, address);
+        return new Customer(name, customerId, email, address, phone);
     }
 
     public void customerDisplayProfile() {
+        System.out.println("============================");
+        System.out.println("      CUSTOMER PROFILE      ");
+        System.out.println("============================");
         System.out.println("Customer ID : " + customerId);
         System.out.println("Full Name   : " + name);
         System.out.println("Email       : " + email);
