@@ -15,7 +15,7 @@ public class Customer {
         this.phone = phone;
     }
 
-    public static Customer registration(String username, String password) {
+    public static Customer registration() {
         Scanner input = new Scanner(System.in);
         System.out.println("============================");
         System.out.println("    ACCOUNT REGISTRATION    ");
@@ -50,5 +50,44 @@ public class Customer {
 
         System.out.println("Successfully created account!");
         return new Customer(customerId, name, email, phone, address);
+    }
+
+    public void displayProfile() {
+        System.out.println("Customer ID : " + customerId);
+        System.out.println("Full Name   : " + name);
+        System.out.println("Email       : " + email);
+        System.out.println("Address     : " + address);
+        System.out.println("Contact No. : " + phone);
+    }
+
+    public String getName() {
+        return name;
+    }
+    public String getCustomerId() {
+        return customerId;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getPhone() {
+        return phone;
+    }
+    public String getAddress() {
+        return address;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
