@@ -1,4 +1,3 @@
-
 public class Admin {
 
     // TODO: Display admin menu

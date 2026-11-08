@@ -1,4 +1,3 @@
-
 public class TransactionList {
 
     // Node structure for linked list
