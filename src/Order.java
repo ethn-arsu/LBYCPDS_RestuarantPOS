@@ -119,7 +119,16 @@ public class Order {
 
     // TODO: Enter quantities
     public void inputQuantity() {
-
+        System.out.println("\n[FOOD QUANTITY]");
+        for (int i = 0; i < selectedItems.length; i++) {
+            if (selectedItems[i] != -1) {
+                int itemIndex = selectedItems[i];
+                System.out.println("Food: " + menu.foodNames[itemIndex]);
+                System.out.print("Enter quantity: ");
+                quantities[i] = input.nextInt();
+            }
+        }
+        calculateTotal();
     }
 
     // TODO: Calculate total cost
