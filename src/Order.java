@@ -1,4 +1,6 @@
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Order {
@@ -8,6 +10,7 @@ public class Order {
     int[] quantities;
     double totalAmount;
     Menu menu;
+    Customer customer;
     Scanner input = new Scanner(System.in);
 
     // Constructor
@@ -195,22 +198,41 @@ public class Order {
     public void displayOrderSummary() {
 
         clearConsole();
-        System.out.println("\n========== ORDER SUMMARY ==========");
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
+        String formattedDate = dtf.format(now);
+
+        String custName = customer.getName();
+        String custPhone = customer.getPhone();
+        String custAddress = customer.getAddress();
+
+        double totalVat = totalAmount - (totalAmount/1.12);
+
+        System.out.println("=======================================================");
+        System.out.println("                PINRITONG MANOK NG KENTUCKY            ");
+        System.out.println("                     OFFICIAL E-RECEIPT                ");
+        System.out.println("=======================================================");
+        System.out.println("-24s %27s%n" + "Date:" + formattedDate);
+        System.out.println("-24s %27s%n" + "Customer:" + custName);
+        System.out.println("-24s %27s%n" + "Contact No.:" + custPhone);
+        System.out.println("-24s %27s%n" + "Delivery Address:" + custAddress);
+        System.out.println("-------------------------------------------------------");
+        System.out.println("%-28s %6s %16s%n" + "Description:" + "QTY" + "Price:");
+        System.out.println("-------------------------------------------------------");
 
         boolean hasItems = false;
 
         for (int i = 0; i < selectedItems.length; i++) {
-
             if (selectedItems[i] != -1) {
                 int itemIndex = selectedItems[i];
                 hasItems = true;
 
-                System.out.println(
-                        menu.foodNames[itemIndex] +
-                                " x " + quantities[i] +
-                                " = PHP " +
-                                (menu.prices[itemIndex] * quantities[i])
-                );
+                String itemName = menu.foodNames[itemIndex];
+                String qty = String.format("%02d", quantities[i]);
+                double lineTotal = menu.prices[itemIndex] * quantities[i];
+                String price = String.format("PHP %.2f", lineTotal);
+
+                System.out.printf("%-28s %6s %16s%n", itemName, qty, price);
             }
         }
 
@@ -218,7 +240,11 @@ public class Order {
             System.out.println("No items ordered.");
         }
 
-        System.out.println("-----------------------------------------");
-        System.out.println("Total Amount: PHP " + totalAmount);
+        System.out.println("------------------------------------------------------");
+        System.out.println("%35s %16s%n" + "Total:" + String.format("PHP %.2f", totalAmount));
+        System.out.println("%35s %16s%n" + "Total VAT:" + String.format("PHP %.2f", totalVat));
+        System.out.println("=======================================================");
+        System.out.printf("               4-1234-%d-1296%n", orderID);
+        System.out.println("------------------------------------------------------");
     }
 }
