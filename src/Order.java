@@ -13,8 +13,8 @@ public class Order {
     public Order(Menu menu) {
         this.menu = menu;
 
-        selectedItems = new int[10];
-        quantities = new int[10];
+        selectedItems = new int[menu.foodNames.length];
+        quantities = new int[menu.foodNames.length];
 
         for (int i = 0; i < selectedItems.length; i++) {
             selectedItems[i] = -1;
@@ -70,6 +70,9 @@ public class Order {
                     break;
                 case 'E':
                     selectedCategory = "DESSERTS";
+                    break;
+                case 'F':
+                    selectedCategory = "DRINKS";
                     break;
                 default:
                     System.out.println("Invalid choice.");
