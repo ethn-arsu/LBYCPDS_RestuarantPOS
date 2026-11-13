@@ -1,4 +1,5 @@
 import java.util.*;
+
 public class Order {
 
     int orderID;
@@ -8,7 +9,7 @@ public class Order {
     Menu menu;
     Scanner input = new Scanner(System.in);
 
-    // TODO: Constructor
+    // Constructor
     public Order(Menu menu) {
         this.menu = menu;
 
@@ -22,13 +23,28 @@ public class Order {
         totalAmount = 0;
     }
 
-    // TODO: Select food items
+    // Clear console
+    public void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    // Pause before changing screens
+    public void pauseScreen() {
+        System.out.print("\nPress Enter to continue...");
+        input.nextLine();
+        input.nextLine();
+    }
+
+    // Select food items
     public void selectItems() {
         int itemCount = 0;
         char categoryChoice;
         int foodChoice;
 
         while (true) {
+            clearConsole();
+
             menu.displayMenu(' ');
             System.out.print("\nSelect category: ");
             categoryChoice = input.next().toUpperCase().charAt(0);
@@ -38,34 +54,32 @@ public class Order {
             }
 
             String selectedCategory = "";
-            switch (categoryChoice) {
 
+            switch (categoryChoice) {
                 case 'A':
                     selectedCategory = "CHICKEN";
                     break;
-
                 case 'B':
                     selectedCategory = "BURGERS";
                     break;
-
                 case 'C':
                     selectedCategory = "MEALS";
                     break;
-
                 case 'D':
                     selectedCategory = "SIDES";
                     break;
-
                 case 'E':
                     selectedCategory = "DESSERTS";
                     break;
-
                 default:
                     System.out.println("Invalid choice.");
+                    pauseScreen();
                     continue;
             }
 
             while (true) {
+                clearConsole();
+
                 menu.displayMenu(categoryChoice);
                 System.out.print("\nSelect food number or X: ");
                 String choice = input.next();
@@ -74,13 +88,26 @@ public class Order {
                     break;
                 }
 
-                foodChoice = Integer.parseInt(choice);
+                // Validate numeric input
+                try {
+                    foodChoice = Integer.parseInt(choice);
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("Invalid food selection.");
+                    pauseScreen();
+                    continue;
+                }
+
                 int itemIndex = foodChoice - 1;
 
-                if (itemIndex < 0 || itemIndex >= menu.foodNames.length) {
+                if (itemIndex < 0 ||
+                        itemIndex >= menu.foodNames.length) {
+
                     System.out.println("Invalid food selection.");
                 }
+
                 else if (!menu.categories[itemIndex].equals(selectedCategory)) {
+
                     System.out.println("Please select an item from this category.");
                 }
 
@@ -94,6 +121,7 @@ public class Order {
                     for (int i = 0; i < itemCount; i++) {
                         if (selectedItems[i] == itemIndex) {
                             alreadySelected = true;
+                            break;
                         }
                     }
 
@@ -112,42 +140,60 @@ public class Order {
                         System.out.println("Maximum items reached.");
                     }
                 }
+
+                pauseScreen();
             }
         }
+
         inputQuantity();
     }
 
-    // TODO: Enter quantities
+    // Enter quantities
     public void inputQuantity() {
-        System.out.println("\n[FOOD QUANTITY]");
+
         for (int i = 0; i < selectedItems.length; i++) {
+
             if (selectedItems[i] != -1) {
+                clearConsole();
+
                 int itemIndex = selectedItems[i];
+
+                System.out.println("\n[FOOD QUANTITY]");
                 System.out.println("Food: " + menu.foodNames[itemIndex]);
+
                 System.out.print("Enter quantity: ");
                 quantities[i] = input.nextInt();
             }
         }
+
         calculateTotal();
     }
 
-    // TODO: Calculate total cost
+    // Calculate total cost
     public void calculateTotal() {
         totalAmount = 0;
+
         for (int i = 0; i < selectedItems.length; i++) {
+
             if (selectedItems[i] != -1) {
                 int itemIndex = selectedItems[i];
+
                 totalAmount += menu.prices[itemIndex] * quantities[i];
             }
         }
     }
 
-    // TODO: Display order summary
+    // Display order summary
     public void displayOrderSummary() {
+        clearConsole();
+
         System.out.println("\n[ORDER SUMMARY]");
+
         for (int i = 0; i < selectedItems.length; i++) {
+
             if (selectedItems[i] != -1) {
                 int itemIndex = selectedItems[i];
+
                 System.out.println(menu.foodNames[itemIndex] + " x " + quantities[i] + " = PHP " + (menu.prices[itemIndex] * quantities[i]));
             }
         }
