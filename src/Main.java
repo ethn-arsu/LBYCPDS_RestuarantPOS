@@ -1,3 +1,4 @@
+import java.util.Scanner;
 public class Main {
 
     /**
@@ -12,11 +13,19 @@ public class Main {
     }
 
     public static void main(String[] args) {
-
+        Scanner scanner = new Scanner(System.in);
         Menu menu = new Menu();
         menu.initializeMenu();
 
-        Order order = new Order(menu);
+        clearConsole();
+        Customer currentCustomer = Customer.customerRegistration();
+
+        clearConsole();
+        currentCustomer.customerDisplayProfile();
+        System.out.println("\nPress Enter to process to the menu.");
+        scanner.nextLine();
+
+        Order order = new Order(menu, currentCustomer);
 
         order.selectItems();
         order.displayOrderSummary();

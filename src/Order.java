@@ -14,8 +14,10 @@ public class Order {
     Scanner input = new Scanner(System.in);
 
     // Constructor
-    public Order(Menu menu) {
+    public Order(Menu menu, Customer currentCustomer) {
         this.menu = menu;
+        this.customer = currentCustomer;
+        this.orderID = (int) (Math.random() * 90000) + 10000;
 
         selectedItems = new int[menu.foodNames.length];
         quantities = new int[menu.foodNames.length];
@@ -205,6 +207,8 @@ public class Order {
         String custName = customer.getName();
         String custPhone = customer.getPhone();
         String custAddress = customer.getAddress();
+        String custEmail = customer.getEmail();
+
 
         double totalVat = totalAmount - (totalAmount/1.12);
 
@@ -212,12 +216,13 @@ public class Order {
         System.out.println("                PINRITONG MANOK NG KENTUCKY            ");
         System.out.println("                     OFFICIAL E-RECEIPT                ");
         System.out.println("=======================================================");
-        System.out.println("-24s %27s%n" + "Date:" + formattedDate);
-        System.out.println("-24s %27s%n" + "Customer:" + custName);
-        System.out.println("-24s %27s%n" + "Contact No.:" + custPhone);
-        System.out.println("-24s %27s%n" + "Delivery Address:" + custAddress);
+        System.out.printf("%-24s %27s%n", "Date:", formattedDate);
+        System.out.printf("%-24s %27s%n", "Customer:", custName);
+        System.out.printf("%-24s %27s%n", "Contact No.:", custPhone);
+        System.out.printf("%-24s %27s%n", "Email:", custEmail);
+        System.out.printf("%-24s %27s%n", "Delivery Address:", custAddress);
         System.out.println("-------------------------------------------------------");
-        System.out.println("%-28s %6s %16s%n" + "Description:" + "QTY" + "Price:");
+        System.out.printf("%-31s %6s %16s%n", "Description:" , "QTY" , "Price:");
         System.out.println("-------------------------------------------------------");
 
         boolean hasItems = false;
@@ -232,7 +237,7 @@ public class Order {
                 double lineTotal = menu.prices[itemIndex] * quantities[i];
                 String price = String.format("PHP %.2f", lineTotal);
 
-                System.out.printf("%-28s %6s %16s%n", itemName, qty, price);
+                System.out.printf("%-31s %6s %16s%n", itemName, qty, price);
             }
         }
 
@@ -241,10 +246,10 @@ public class Order {
         }
 
         System.out.println("------------------------------------------------------");
-        System.out.println("%35s %16s%n" + "Total:" + String.format("PHP %.2f", totalAmount));
-        System.out.println("%35s %16s%n" + "Total VAT:" + String.format("PHP %.2f", totalVat));
+        System.out.printf("%38s %16s%n" , "Total:" ,  String.format("PHP %.2f", totalAmount));
+        System.out.printf("%38s %16s%n" ,  "Total VAT:" ,  String.format("PHP %.2f", totalVat));
         System.out.println("=======================================================");
-        System.out.printf("               4-1234-%d-1296%n", orderID);
+        System.out.printf("                  4-1234-%d-1296%n", orderID);
         System.out.println("------------------------------------------------------");
     }
 }
