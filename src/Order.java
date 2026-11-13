@@ -1,4 +1,3 @@
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -41,12 +40,12 @@ public class Order {
         boolean ordering = true;
 
         clearConsole();
-        System.out.println("\n========== ORDER TAKING ==========");
+        System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t========== ORDER TAKING ==========");
         menu.displayMenu(' ');
 
         while (ordering) {
 
-            System.out.print("\nSelect category or X to finish: ");
+            System.out.print("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tSelect category or X to finish: ");
             char categoryChoice =
                     input.next().toUpperCase().charAt(0);
 
@@ -76,7 +75,7 @@ public class Order {
                     selectedCategory = "DRINKS";
                     break;
                 default:
-                    System.out.println("Invalid category.");
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tInvalid category.");
                     continue;
             }
 
@@ -86,7 +85,7 @@ public class Order {
 
             while (true) {
 
-                System.out.print("\nEnter food number, B to change category, or X to finish: ");
+                System.out.print("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter food number, B to change category, or X to finish: ");
 
                 String choice = input.next();
 
@@ -106,7 +105,7 @@ public class Order {
                 try {
                     foodChoice = Integer.parseInt(choice);
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid food selection.");
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tInvalid food selection.");
                     continue;
                 }
 
@@ -115,16 +114,16 @@ public class Order {
                 if (itemIndex < 0 ||
                         itemIndex >= menu.foodNames.length) {
 
-                    System.out.println("Invalid food selection.");
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tInvalid food selection.");
                 }
 
                 else if (!menu.categories[itemIndex].equals(selectedCategory)) {
 
-                    System.out.println("Please select an item from this category.");
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tPlease select an item from this category.");
                 }
 
                 else if (menu.stocks[itemIndex] <= 0) {
-                    System.out.println("This item is out of stock.");
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tThis item is out of stock.");
                 }
 
                 else {
@@ -138,18 +137,18 @@ public class Order {
                     }
 
                     if (alreadySelected) {
-                        System.out.println("Item already selected.");
+                        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tItem already selected.");
                     }
 
                     else if (itemCount < selectedItems.length) {
                         selectedItems[itemCount] = itemIndex;
                         itemCount++;
 
-                        System.out.println(menu.foodNames[itemIndex] + " added to your order.");
+                        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t" + menu.foodNames[itemIndex] + " added to your order.");
                     }
 
                     else {
-                        System.out.println("Maximum items reached.");
+                        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tMaximum items reached.");
                     }
                 }
             }
@@ -162,18 +161,17 @@ public class Order {
     public void inputQuantity() {
 
         clearConsole();
-        System.out.println("\n========== FOOD QUANTITY ==========");
+        System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t========== FOOD QUANTITY ==========");
 
         for (int i = 0; i < selectedItems.length; i++) {
 
             if (selectedItems[i] != -1) {
                 int itemIndex = selectedItems[i];
 
-                System.out.println(
-                        "\nFood: " + menu.foodNames[itemIndex]
+                System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tFood: " + menu.foodNames[itemIndex]
                 );
 
-                System.out.print("Enter quantity: ");
+                System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter quantity: ");
                 quantities[i] = input.nextInt();
             }
         }
@@ -212,18 +210,18 @@ public class Order {
 
         double totalVat = totalAmount - (totalAmount/1.12);
 
-        System.out.println("=======================================================");
-        System.out.println("                PINRITONG MANOK NG KENTUCKY            ");
-        System.out.println("                     OFFICIAL E-RECEIPT                ");
-        System.out.println("=======================================================");
-        System.out.printf("%-24s %27s%n", "Date:", formattedDate);
-        System.out.printf("%-24s %27s%n", "Customer:", custName);
-        System.out.printf("%-24s %27s%n", "Contact No.:", custPhone);
-        System.out.printf("%-24s %27s%n", "Email:", custEmail);
-        System.out.printf("%-24s %27s%n", "Delivery Address:", custAddress);
-        System.out.println("-------------------------------------------------------");
-        System.out.printf("%-31s %6s %16s%n", "Description:" , "QTY" , "Price:");
-        System.out.println("-------------------------------------------------------");
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t\t\t=======================================================");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t                PINRITONG MANOK NG KENTUCKY            ");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t                     OFFICIAL E-RECEIPT                ");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t=======================================================");
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-24s %27s%n", "Date:\t", formattedDate);
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-24s %27s%n", "Customer:\t", custName);
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-24s %27s%n", "Contact No.:\t", custPhone);
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-24s %27s%n", "Email:\t", custEmail);
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-24s %27s%n", "Delivery Address:\t", custAddress);
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t-------------------------------------------------------");
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-31s %6s %16s%n", "Description:" , "QTY" , "Price:");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t-------------------------------------------------------");
 
         boolean hasItems = false;
 
@@ -233,23 +231,23 @@ public class Order {
                 hasItems = true;
 
                 String itemName = menu.foodNames[itemIndex];
-                String qty = String.format("%02d", quantities[i]);
+                String qty = String.format("t%02d", quantities[i]);
                 double lineTotal = menu.prices[itemIndex] * quantities[i];
                 String price = String.format("PHP %.2f", lineTotal);
 
-                System.out.printf("%-31s %6s %16s%n", itemName, qty, price);
+                System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%-31s %6s %16s%n", itemName, qty, price);
             }
         }
 
         if (!hasItems) {
-            System.out.println("No items ordered.");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tNo items ordered.");
         }
 
-        System.out.println("------------------------------------------------------");
-        System.out.printf("%38s %16s%n" , "Total:" ,  String.format("PHP %.2f", totalAmount));
-        System.out.printf("%38s %16s%n" ,  "Total VAT:" ,  String.format("PHP %.2f", totalVat));
-        System.out.println("=======================================================");
-        System.out.printf("                  4-1234-%d-1296%n", orderID);
-        System.out.println("------------------------------------------------------");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t-------------------------------------------------------");
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%38s %16s%n" , "Total:" ,  String.format("PHP %.2f", totalAmount));
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t%38s %16s%n" ,  "Total VAT:" ,  String.format("PHP %.2f", totalVat));
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t=======================================================");
+        System.out.printf("\t\t\t\t\t\t\t\t\t\t\t\t                  4-1234-%d-1296%n", orderID);
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t------------------------------------------------------");
     }
 }

@@ -52,14 +52,14 @@ public class Menu {
         }
 
         if (choice == ' ') {
-            System.out.println("\n[PMK MENU]");
-            System.out.println("[A] Chicken");
-            System.out.println("[B] Burgers");
-            System.out.println("[C] Meals");
-            System.out.println("[D] Sides");
-            System.out.println("[E] Desserts");
-            System.out.println("[F] Drinks");
-            System.out.println("[X] Finish Order");
+            System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[PMK MENU]");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[A] Chicken");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[B] Burgers");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[C] Meals");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[D] Sides");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[E] Desserts");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[F] Drinks");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[X] Finish Order");
         }
 
         else {
@@ -84,18 +84,18 @@ public class Menu {
                     selectedCategory = "DRINKS";
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tInvalid choice.");
                     return;
             }
 
-            System.out.println("\n[" + selectedCategory + "]");
+            System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[" + selectedCategory + "]");
             for (int i = 0; i < foodNames.length; i++) {
                 if (categories[i].equals(selectedCategory)) {
-                    System.out.println("[" + (i + 1) + "] " + foodNames[i] + " - PHP " + prices[i] + " | Stock: " + stocks[i]);
+                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[" + (i + 1) + "] " + foodNames[i] + " - PHP " + prices[i] + " | Stock: " + stocks[i]);
                 }
             }
 
-            System.out.println("[X] Back to Categories");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[X] Back to Categories");
         }
     }
 

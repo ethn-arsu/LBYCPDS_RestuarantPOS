@@ -17,50 +17,50 @@ public class Customer {
 
     public static Customer customerRegistration() {
         Scanner input = new Scanner(System.in);
-        System.out.println("============================");
-        System.out.println("    ACCOUNT REGISTRATION    ");
-        System.out.println("============================");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t============================");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t    ACCOUNT REGISTRATION    ");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t============================");
 
-        System.out.println("Enter your full name: ");
+        System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your full name: ");
         String name = input.nextLine();
         while (name.isEmpty()) {
-            System.out.println("Enter your full name: ");
+            System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your full name: ");
             name = input.nextLine();
         }
-        System.out.println("Enter your email: ");
+        System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your email: ");
         String email = input.nextLine();
         while (email.isEmpty()) {
-            System.out.println("Enter your email: ");
+            System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your email: ");
             email = input.nextLine();
         }
-        System.out.println("Enter your phone number: ");
+        System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your phone number: ");
         String phone = input.nextLine();
         while (phone.isEmpty()) {
-            System.out.println("Enter your phone number: ");
+            System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your phone number: ");
             phone = input.nextLine();
         }
-        System.out.println("Enter your address: ");
+        System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your address: ");
         String address = input.nextLine();
         while (address.isEmpty()) {
-            System.out.println("Enter your address: ");
+            System.out.print("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEnter your address: ");
             address = input.nextLine();
         }
 
         String customerId ="00" + (int) (Math.random() *10);
 
-        System.out.println("Successfully created account!");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tSuccessfully created account!");
         return new Customer(name, customerId, email, address, phone);
     }
 
     public void customerDisplayProfile() {
-        System.out.println("============================");
-        System.out.println("      CUSTOMER PROFILE      ");
-        System.out.println("============================");
-        System.out.println("Customer ID : " + customerId);
-        System.out.println("Full Name   : " + name);
-        System.out.println("Email       : " + email);
-        System.out.println("Address     : " + address);
-        System.out.println("Contact No. : " + phone);
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t============================");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t      CUSTOMER PROFILE      ");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t============================");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tCustomer ID : " + customerId);
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tFull Name   : " + name);
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tEmail       : " + email);
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tAddress     : " + address);
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tContact No. : " + phone);
     }
 
     public String getName() {

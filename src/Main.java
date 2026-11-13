@@ -22,7 +22,7 @@ public class Main {
 
         clearConsole();
         currentCustomer.customerDisplayProfile();
-        System.out.println("\nPress Enter to process to the menu.");
+        System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tPress [Enter] to process to the menu.");
         scanner.nextLine();
 
         Order order = new Order(menu, currentCustomer);
