@@ -141,14 +141,15 @@ public class Main {
             scanner.nextLine();
 
             boolean newTransaction = true;
-            while(newTransaction) {
+            while (newTransaction) {
                 Order order = new Order(menu, currentCustomer);
                 boolean orderConfirmed = false;
                 boolean orderCancelled = false;
+
                 while (!orderConfirmed && !orderCancelled) {
                     order.selectItems();
 
-                    if(!order.hasItems()){
+                    if (!order.hasItems()) {
                         clearConsole();
                         printLine("=".repeat(CONTENT_WIDTH));
                         printCentered("NO ITEMS SELECTED");
@@ -159,36 +160,54 @@ public class Main {
                         printLine("[2] Cancel transaction");
                         System.out.println();
 
-                        while(true){
+                        while (true) {
                             printPrompt("Select option: ");
                             String emptyChoice = scanner.nextLine().trim();
                             if (emptyChoice.equals("1")) {
                                 break;
-                            }else if (emptyChoice.equals("2")) {
+                            } else if (emptyChoice.equals("2")) {
                                 orderCancelled = true;
                                 break;
-                            }else   printLine("Invalid option. Please try again.");
+                            } else printLine("Invalid option. Please try again.");
                         }
-                    }else{
+                    } else {
                         int confirm = order.confirmFinalOrder();
-                        if(confirm == 1){
+                        if (confirm == 1) {
                             orderConfirmed = true;
-                        }else if(confirm == 2){
+                        } else if (confirm == 2) {
                             continue;
-                        }else orderCancelled = true;
+                        } else orderCancelled = true;
                     }
                 }
+                if (orderConfirmed) {
+                    order.pwdDiscount();
+                    order.finalizeOrder();
+                    order.displayOrderSummary();
+                } else {
+                    clearConsole();
+                    printLine("=".repeat(CONTENT_WIDTH));
+                    printCentered("Order cancelled. No e-receipt generated.");
+                    printLine("=".repeat(CONTENT_WIDTH));
+                }
+
+                System.out.println();
+                printLine("Would you like to make another transaction?");
+                printLine("[1] Yes (Place another order)");
+                printLine("[2] No (Return to Main menu)");
+                System.out.println();
+
+                while (true) {
+                    printPrompt("Select option: ");
+                    String another = scanner.nextLine().trim();
+                    if (another.equals("1")) {
+                        newTransaction = true;
+                        break;
+                    } else if (another.equals("2")) {
+                        newTransaction = false;
+                        break;
+                    } else printLine("Invalid option. Please try again.");
+                }
             }
-
-            // Existing order process
-            Order order = new Order(menu, currentCustomer);
-
-            order.selectItems();
-            order.displayOrderSummary();
-
-            // End the current customer session
-            // Other transaction features will be integrated later
-            return;
         }
     }
 }

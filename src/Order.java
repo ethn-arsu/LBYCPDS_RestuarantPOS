@@ -51,7 +51,6 @@ public class Order {
     // Left margin of content area
     private String getPadding() {
         int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
-
         return " ".repeat(padding);
     }
 
@@ -63,7 +62,6 @@ public class Order {
     // Center text
     private void printCentered(String text) {
         int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
-
         System.out.println(getPadding() + " ".repeat(padding) + text);
     }
 
@@ -94,7 +92,6 @@ public class Order {
     // Select food items
     public void selectItems() {
 
-        int itemCount = 0;
         boolean ordering = true;
 
         while (ordering) {
@@ -104,7 +101,7 @@ public class Order {
             menu.displayMenu(' ');
 
             printPrompt("Select category or X to finish: ");
-            String categoryInput = input.next().toUpperCase();
+            String categoryInput = input.nextLine().trim().toUpperCase();
             char categoryChoice = categoryInput.charAt(0);
 
             if (categoryChoice == 'X') {
@@ -147,7 +144,7 @@ public class Order {
                 menu.displayMenu(categoryChoice);
 
                 printPrompt("Select food number: ");
-                String choice = input.next();
+                String choice = input.nextLine().trim();
 
                 // Return to category selection
                 if (choice.equalsIgnoreCase("B")) {
@@ -166,7 +163,6 @@ public class Order {
                     foodChoice = Integer.parseInt(choice);
                 } catch (NumberFormatException e) {
                     printLine("Invalid food selection.");
-                    input.nextLine();
                     pauseScreen();
                     continue;
                 }
@@ -177,7 +173,6 @@ public class Order {
                         itemIndex >= menu.foodNames.length) {
 
                     printLine("Invalid food selection.");
-                    input.nextLine();
                     pauseScreen();
                     continue;
                 }
@@ -185,14 +180,12 @@ public class Order {
                 if (!menu.categories[itemIndex].equals(selectedCategory)) {
 
                     printLine("Please select an item from this category.");
-                    input.nextLine();
                     pauseScreen();
                     continue;
                 }
 
                 if (menu.stocks[itemIndex] <= 0) {
                     printLine("This item is out of stock.");
-                    input.nextLine();
                     pauseScreen();
                     continue;
                 }
@@ -224,7 +217,7 @@ public class Order {
                 while (true) {
 
                     printPrompt("Enter quantity: ");
-                    String quantityInput = input.next();
+                    String quantityInput = input.nextLine().trim();
 
                     try {
                         quantity = Integer.parseInt(quantityInput);
@@ -281,7 +274,7 @@ public class Order {
                 printCentered("ITEM ADDED SUCCESSFULLY!");
                 System.out.println();
 
-                displayCurrentOrder(itemCount);
+                displayCurrentOrder();
 
                 // Navigation after adding an item
                 while (true) {
@@ -297,7 +290,7 @@ public class Order {
                     System.out.println();
                     printPrompt("Select option: ");
 
-                    String nextChoice = input.next();
+                    String nextChoice = input.nextLine().trim();
 
                     if (nextChoice.equals("1")) {
                         // Return to the current food category
@@ -331,7 +324,7 @@ public class Order {
 
         printCentered("REVIEW FINAL ORDER");
         System.out.println();
-        displayCurrentOrder(0);
+        displayCurrentOrder();
 
         System.out.println();
         printLine("Proceed to E-receipt?");
@@ -357,7 +350,7 @@ public class Order {
         clearConsole();
         String border = "=".repeat(CONTENT_WIDTH);
         printLine(border);
-        System.out.println("PWD DISCOUNT");
+        printCentered("PWD DISCOUNT");
         printLine(border);
         System.out.println();
 
@@ -367,7 +360,7 @@ public class Order {
             if (choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("yes")) {
                 hasPwdDiscount = true;
                 System.out.println();
-                printCentered("20% PWD DISCOUNT SUCCESSFULLY APPLIED!");
+                printCentered("20% PWD DISCOUNT AND VAT EXEMPTION SUCCESSFULLY APPLIED.!");
                 System.out.println();
                 pauseScreen();
                 break;
@@ -379,8 +372,17 @@ public class Order {
         calculateTotal();
     }
 
+    public void finalizeOrder(){
+        calculateTotal();
+        for(int i=0; i<itemCount; i++){
+            if(selectedItems[i] != -1){
+                int itemIndex = selectedItems[i];
+                menu.stocks[itemIndex] -= quantities[i];
+            }
+        }
+    }
     // Display current order and running total
-    public void displayCurrentOrder(int itemCount) {
+    public void displayCurrentOrder() {
 
         String border = "=".repeat(CONTENT_WIDTH);
         String separator = "-".repeat(CONTENT_WIDTH);
@@ -420,7 +422,7 @@ public class Order {
 
     // Calculate total cost
     public void calculateTotal() {
-
+        subtotal = 0;
         totalAmount = 0;
 
         for (int i = 0; i < selectedItems.length; i++) {
@@ -429,8 +431,18 @@ public class Order {
 
                 int itemIndex = selectedItems[i];
 
-                totalAmount += menu.prices[itemIndex] * quantities[i];
+                subtotal += menu.prices[itemIndex] * quantities[i];
             }
+        }
+        if(hasPwdDiscount && subtotal>0){
+            double vatExemptSales = subtotal/1.12;
+            totalDiscount = vatExemptSales * 0.20;
+            totalVat = 0.0;
+            totalAmount = vatExemptSales - totalDiscount;
+        }else{
+            totalDiscount = 0.0;
+            totalVat = subtotal - (subtotal/1.12);
+            totalAmount = subtotal;
         }
     }
 
@@ -506,11 +518,18 @@ public class Order {
 
         printLine(separator);
 
-        printReceiptRow("%-39s %20s", "Total:", String.format("PHP %.2f", totalAmount));
-        printReceiptRow("%-39s %20s", "Total VAT:", String.format("PHP %.2f", totalVat));
+        printReceiptRow("%-39s %20s", "Subtotal:", String.format("PHP %.2f", subtotal));
 
+        if(hasPwdDiscount) {
+            printReceiptRow("%-39s %20s", "PWD Discount (20%):", String.format("-PHP %.2f", totalDiscount));
+            printReceiptRow("%-39s %20s", "Total VAT (Exempt):", "PHP 0.00");
+        }else {
+            printReceiptRow("%-39s %20s", "PWD Discount:", "PHP 0.00");
+            printReceiptRow("%-39s %20s", "Total VAT (12%):", String.format("PHP %.2f", totalVat));
+        }
         printLine(border);
-
+        printReceiptRow("%-39s %20s", "TOTAL AMOUNT:", String.format("PHP %.2f", totalAmount));
+        printLine(border);
         printReceiptHeading("4-1234-" + orderID + "-1296");
 
         printLine(separator);
