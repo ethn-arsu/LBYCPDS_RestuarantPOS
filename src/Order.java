@@ -13,7 +13,6 @@ public class Order {
     double totalDiscount;
     double totalVat;
     boolean hasPwdDiscount;
-    String pwdId;
     Menu menu;
     Customer customer;
     Scanner input = new Scanner(System.in);
@@ -41,7 +40,6 @@ public class Order {
         totalDiscount = 0;
         totalVat = 0;
         hasPwdDiscount = false;
-        pwdId = "";
     }
 
     // Clear terminal screen
@@ -353,6 +351,32 @@ public class Order {
                 default ->  printLine("Invalid option. Please try again.");
             }
         }
+    }
+
+    public void pwdDiscount(){
+        clearConsole();
+        String border = "=".repeat(CONTENT_WIDTH);
+        printLine(border);
+        System.out.println("PWD DISCOUNT");
+        printLine(border);
+        System.out.println();
+
+        while (true) {
+            printPrompt("Do you want to avail the PWD Discount? (Y/N): ");
+            String choice = input.nextLine().trim();
+            if (choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("yes")) {
+                hasPwdDiscount = true;
+                System.out.println();
+                printCentered("20% PWD DISCOUNT SUCCESSFULLY APPLIED!");
+                System.out.println();
+                pauseScreen();
+                break;
+            }else if (choice.equalsIgnoreCase("N") || choice.equalsIgnoreCase("no")) {
+                hasPwdDiscount = false;
+                break;
+            }else printLine("Invalid option. Please try again.");
+        }
+        calculateTotal();
     }
 
     // Display current order and running total
