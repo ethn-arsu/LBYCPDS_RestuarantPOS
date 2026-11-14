@@ -5,9 +5,15 @@ import java.util.Scanner;
 public class Order {
 
     int orderID;
+    int itemCount;
     int[] selectedItems;
     int[] quantities;
     double totalAmount;
+    double subtotal;
+    double totalDiscount;
+    double totalVat;
+    boolean hasPwdDiscount;
+    String pwdId;
     Menu menu;
     Customer customer;
     Scanner input = new Scanner(System.in);
@@ -21,6 +27,7 @@ public class Order {
         this.menu = menu;
         this.customer = currentCustomer;
         this.orderID = (int) (Math.random() * 90000) + 10000;
+        this.itemCount = 0;
 
         selectedItems = new int[menu.foodNames.length];
         quantities = new int[menu.foodNames.length];
@@ -30,6 +37,11 @@ public class Order {
         }
 
         totalAmount = 0;
+        subtotal = 0;
+        totalDiscount = 0;
+        totalVat = 0;
+        hasPwdDiscount = false;
+        pwdId = "";
     }
 
     // Clear terminal screen
@@ -76,6 +88,9 @@ public class Order {
     private void pauseScreen() {
         printPrompt("Press Enter to continue...");
         input.nextLine();
+    }
+    public boolean hasItems(){
+        return itemCount>0;
     }
 
     // Select food items
@@ -310,6 +325,34 @@ public class Order {
         }
 
         calculateTotal();
+    }
+    //Checks if customer is done ordering
+    public int confirmFinalOrder(){
+        clearConsole();
+        calculateTotal();
+
+        printCentered("REVIEW FINAL ORDER");
+        System.out.println();
+        displayCurrentOrder(0);
+
+        System.out.println();
+        printLine("Proceed to E-receipt?");
+        printLine("[1] Yes, confirm order");
+        printLine("[2] Add more items");
+        printLine("[3] No, cancel order");
+        System.out.println();
+
+        while (true) {
+            printPrompt("Select option: ");
+            String choice = input.nextLine().trim();
+
+            switch (choice) {
+                case "1" -> {return 1;}
+                case "2" -> {return 2;}
+                case "3" -> {return 3;}
+                default ->  printLine("Invalid option. Please try again.");
+            }
+        }
     }
 
     // Display current order and running total

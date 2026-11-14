@@ -140,6 +140,46 @@ public class Main {
             printCentered("Press Enter to proceed to the menu.");
             scanner.nextLine();
 
+            boolean newTransaction = true;
+            while(newTransaction) {
+                Order order = new Order(menu, currentCustomer);
+                boolean orderConfirmed = false;
+                boolean orderCancelled = false;
+                while (!orderConfirmed && !orderCancelled) {
+                    order.selectItems();
+
+                    if(!order.hasItems()){
+                        clearConsole();
+                        printLine("=".repeat(CONTENT_WIDTH));
+                        printCentered("NO ITEMS SELECTED");
+                        printLine("=".repeat(CONTENT_WIDTH));
+                        System.out.println();
+                        printLine("Your cart is currently empty.");
+                        printLine("[1] Return to menu to order");
+                        printLine("[2] Cancel transaction");
+                        System.out.println();
+
+                        while(true){
+                            printPrompt("Select option: ");
+                            String emptyChoice = scanner.nextLine().trim();
+                            if (emptyChoice.equals("1")) {
+                                break;
+                            }else if (emptyChoice.equals("2")) {
+                                orderCancelled = true;
+                                break;
+                            }else   printLine("Invalid option. Please try again.");
+                        }
+                    }else{
+                        int confirm = order.confirmFinalOrder();
+                        if(confirm == 1){
+                            orderConfirmed = true;
+                        }else if(confirm == 2){
+                            continue;
+                        }else orderCancelled = true;
+                    }
+                }
+            }
+
             // Existing order process
             Order order = new Order(menu, currentCustomer);
 
