@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 public class Customer {
@@ -16,6 +15,7 @@ public class Customer {
     // Constructor
     public Customer(String name, String customerId,
                     String email, String address, String phone) {
+
         this.name = name;
         this.customerId = customerId;
         this.email = email;
@@ -25,9 +25,7 @@ public class Customer {
 
     // Left margin for centered content
     private static String getPadding() {
-        int padding = Math.max(
-                0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2
-        );
+        int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
 
         return " ".repeat(padding);
     }
@@ -39,13 +37,9 @@ public class Customer {
 
     // Center headings within the content area
     private static void printCentered(String text) {
-        int padding = Math.max(
-                0, (CONTENT_WIDTH - text.length()) / 2
-        );
+        int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
 
-        System.out.println(
-                getPadding() + " ".repeat(padding) + text
-        );
+        System.out.println(getPadding() + " ".repeat(padding) + text);
     }
 
     // Display input prompt
@@ -53,11 +47,36 @@ public class Customer {
         System.out.print(getPadding() + text);
     }
 
-    // Customer registration
+    // Require a nonempty input
+    private static String readRequiredInput(
+            Scanner input, String prompt) {
+
+        String value;
+
+        do {
+            printPrompt(prompt);
+            value = input.nextLine().trim();
+
+            if (value.isEmpty()) {
+                printLine("This field cannot be empty.");
+            }
+
+        } while (value.isEmpty());
+
+        return value;
+    }
+
+    // Compatibility with the current Main.java
     public static Customer customerRegistration() {
+        AccountManager manager = new AccountManager();
+        return customerRegistration(manager);
+    }
+
+    // Register a new customer account
+    public static Customer customerRegistration(
+            AccountManager manager) {
 
         Scanner input = new Scanner(System.in);
-
         String border = "=".repeat(CONTENT_WIDTH);
 
         System.out.println();
@@ -66,47 +85,68 @@ public class Customer {
         printLine(border);
         System.out.println();
 
-        printPrompt("Enter your full name: ");
-        String name = input.nextLine();
+        String name = readRequiredInput(input, "Enter your full name: ");
 
-        while (name.isEmpty()) {
-            printPrompt("Enter your full name: ");
-            name = input.nextLine();
+        // Verify that the email is not already registered
+        String email;
+
+        while (true) {
+            email = readRequiredInput(input, "Enter your email: ");
+
+            if (manager.accountExists(email)) {
+                printLine("This email is already registered.");
+                printLine("Please use another email or log in.");
+            } else {
+                break;
+            }
         }
 
-        printPrompt("Enter your email: ");
-        String email = input.nextLine();
+        String phone = readRequiredInput(input, "Enter your phone number: ");
 
-        while (email.isEmpty()) {
-            printPrompt("Enter your email: ");
-            email = input.nextLine();
+        String address = readRequiredInput(input, "Enter your address: ");
+
+        // Create password
+        String password;
+
+        while (true) {
+            printPrompt("Create password (minimum 8 characters): ");
+            password = input.nextLine();
+
+            if (password.length() < 8) {
+                printLine(
+                        "Password must contain at least 8 characters."
+                );
+                continue;
+            }
+
+            printPrompt("Confirm password: ");
+            String confirmation = input.nextLine();
+
+            if (!password.equals(confirmation)) {
+                printLine("Passwords do not match. Try again.");
+                continue;
+            }
+
+            break;
         }
 
-        printPrompt("Enter your phone number: ");
-        String phone = input.nextLine();
+        // AccountManager assigns a unique customer ID
+        Customer newCustomer = new Customer(name, "", email, address, phone);
 
-        while (phone.isEmpty()) {
-            printPrompt("Enter your phone number: ");
-            phone = input.nextLine();
+        // Add the account and save to CSV
+        boolean saved = manager.registerAccount(newCustomer, password);
+
+        if (!saved) {
+            System.out.println();
+            printLine("Account registration could not be completed.");
+            return null;
         }
-
-        printPrompt("Enter your address: ");
-        String address = input.nextLine();
-
-        while (address.isEmpty()) {
-            printPrompt("Enter your address: ");
-            address = input.nextLine();
-        }
-
-        String customerId =
-                "00" + (int) (Math.random() * 10);
 
         System.out.println();
-        printCentered("Successfully created account!");
+        printCentered("Account registered successfully!");
+        printLine("Customer ID: " + newCustomer.getCustomerId());
 
-        return new Customer(
-                name, customerId, email, address, phone
-        );
+        return newCustomer;
     }
 
     // Display customer profile
@@ -121,25 +161,11 @@ public class Customer {
         printLine(border);
         System.out.println();
 
-        printLine(String.format(
-                "%-20s %s", "Customer ID:", customerId
-        ));
-
-        printLine(String.format(
-                "%-20s %s", "Full Name:", name
-        ));
-
-        printLine(String.format(
-                "%-20s %s", "Email:", email
-        ));
-
-        printLine(String.format(
-                "%-20s %s", "Address:", address
-        ));
-
-        printLine(String.format(
-                "%-20s %s", "Contact No.:", phone
-        ));
+        printLine(String.format("%-20s %s", "Customer ID:", customerId));
+        printLine(String.format("%-20s %s", "Full Name:", name));
+        printLine(String.format("%-20s %s", "Email:", email));
+        printLine(String.format("%-20s %s", "Address:", address));
+        printLine(String.format("%-20s %s", "Contact No.:", phone));
 
         System.out.println();
         printLine(separator);
