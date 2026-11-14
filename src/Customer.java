@@ -11,7 +11,7 @@ public class Customer {
 
     // Console formatting
     private static final int CONSOLE_WIDTH = 120;
-    private static final int CONTENT_WIDTH = 44;
+    private static final int CONTENT_WIDTH = 60;
 
     // Constructor
     public Customer(String name, String customerId,
@@ -25,13 +25,27 @@ public class Customer {
 
     // Left margin for centered content
     private static String getPadding() {
-        int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
+        int padding = Math.max(
+                0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2
+        );
+
         return " ".repeat(padding);
     }
 
+    // Print text aligned to the content area
+    private static void printLine(String text) {
+        System.out.println(getPadding() + text);
+    }
+
+    // Center headings within the content area
     private static void printCentered(String text) {
-        int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
-        System.out.println(getPadding() + " ".repeat(padding) + text);
+        int padding = Math.max(
+                0, (CONTENT_WIDTH - text.length()) / 2
+        );
+
+        System.out.println(
+                getPadding() + " ".repeat(padding) + text
+        );
     }
 
     // Display input prompt
@@ -44,10 +58,13 @@ public class Customer {
 
         Scanner input = new Scanner(System.in);
 
+        String border = "=".repeat(CONTENT_WIDTH);
+
         System.out.println();
-        printCentered("=================================");
+        printLine(border);
         printCentered("ACCOUNT REGISTRATION");
-        printCentered("=================================");
+        printLine(border);
+        System.out.println();
 
         printPrompt("Enter your full name: ");
         String name = input.nextLine();
@@ -81,29 +98,51 @@ public class Customer {
             address = input.nextLine();
         }
 
-        String customerId = "00" + (int) (Math.random() * 10);
+        String customerId =
+                "00" + (int) (Math.random() * 10);
 
         System.out.println();
         printCentered("Successfully created account!");
 
-        return new Customer(name, customerId, email, address, phone);
+        return new Customer(
+                name, customerId, email, address, phone
+        );
     }
 
     // Display customer profile
     public void customerDisplayProfile() {
 
+        String border = "=".repeat(CONTENT_WIDTH);
+        String separator = "-".repeat(CONTENT_WIDTH);
+
         System.out.println();
-        printCentered("============================");
+        printLine(border);
         printCentered("CUSTOMER PROFILE");
-        printCentered("============================");
+        printLine(border);
+        System.out.println();
 
-        String padding = getPadding();
+        printLine(String.format(
+                "%-20s %s", "Customer ID:", customerId
+        ));
 
-        System.out.println(padding + "Customer ID : " + customerId);
-        System.out.println(padding + "Full Name   : " + name);
-        System.out.println(padding + "Email       : " + email);
-        System.out.println(padding + "Address     : " + address);
-        System.out.println(padding + "Contact No. : " + phone);
+        printLine(String.format(
+                "%-20s %s", "Full Name:", name
+        ));
+
+        printLine(String.format(
+                "%-20s %s", "Email:", email
+        ));
+
+        printLine(String.format(
+                "%-20s %s", "Address:", address
+        ));
+
+        printLine(String.format(
+                "%-20s %s", "Contact No.:", phone
+        ));
+
+        System.out.println();
+        printLine(separator);
     }
 
     // Getters

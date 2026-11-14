@@ -1,14 +1,37 @@
-import java.util.*;
+
 public class Menu {
 
-    // arrays for menu information
+    // Arrays for menu information
     String[] foodNames;
     double[] prices;
     String[] categories;
     int[] stocks;
 
-    // TODO: Initialize menu arrays
+    // Console formatting
+    private static final int CONSOLE_WIDTH = 120;
+    private static final int CONTENT_WIDTH = 60;
+
+    // Left margin for the content area
+    private String getPadding() {
+        int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
+
+        return " ".repeat(padding);
+    }
+
+    // Print text aligned to the content area
+    private void printLine(String text) {
+        System.out.println(getPadding() + text);
+    }
+
+    // Center a heading within the content area
+    private void printCentered(String text) {
+        int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
+        System.out.println(getPadding() + " ".repeat(padding) + text);
+    }
+
+    // Menu items. Add more as needed.
     public void initializeMenu() {
+
         foodNames = new String[]{
                 "Original Recipe Chicken",
                 "Hot and Crispy Chicken",
@@ -24,7 +47,7 @@ public class Menu {
                 "Iced Tea",
                 "Orange Juice",
                 "Coca Cola",
-                "Pepsi",
+                "Pepsi"
         };
 
         prices = new double[]{
@@ -41,61 +64,99 @@ public class Menu {
         };
 
         stocks = new int[]{
-                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+                20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20
         };
     }
 
-    // TODO: Display categorized food menu
+    // Display categorized food menu
     public void displayMenu(char choice) {
+
         if (choice == 'X') {
             return;
         }
 
+        String border = "=".repeat(CONTENT_WIDTH);
+        String separator = "-".repeat(CONTENT_WIDTH);
+
+        System.out.println();
+        printLine(border);
+
         if (choice == ' ') {
-            System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[PMK MENU]");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[A] Chicken");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[B] Burgers");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[C] Meals");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[D] Sides");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[E] Desserts");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[F] Drinks");
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[X] Finish Order");
+
+            printCentered("PMK MENU");
+            printLine(border);
+            System.out.println();
+
+            printLine("[A] Chicken");
+            printLine("[B] Burgers");
+            printLine("[C] Meals");
+            printLine("[D] Sides");
+            printLine("[E] Desserts");
+            printLine("[F] Drinks");
+            printLine("[X] Finish Order");
+
+            System.out.println();
         }
 
         else {
+
             String selectedCategory = "";
+
             switch (choice) {
                 case 'A':
                     selectedCategory = "CHICKEN";
                     break;
+
                 case 'B':
                     selectedCategory = "BURGERS";
                     break;
+
                 case 'C':
                     selectedCategory = "MEALS";
                     break;
+
                 case 'D':
                     selectedCategory = "SIDES";
                     break;
+
                 case 'E':
                     selectedCategory = "DESSERTS";
                     break;
+
                 case 'F':
                     selectedCategory = "DRINKS";
                     break;
+
                 default:
-                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tInvalid choice.");
+                    printLine("Invalid choice.");
                     return;
             }
 
-            System.out.println("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[" + selectedCategory + "]");
+            printCentered(selectedCategory);
+            printLine(border);
+            System.out.println();
+
             for (int i = 0; i < foodNames.length; i++) {
+
                 if (categories[i].equals(selectedCategory)) {
-                    System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[" + (i + 1) + "] " + foodNames[i] + " - PHP " + prices[i] + " | Stock: " + stocks[i]);
+
+                    String item = String.format("[%d] %s", i + 1, foodNames[i]);
+
+                    String price = String.format("PHP %.2f", prices[i]);
+
+                    String stock = String.format("Stock: %d", stocks[i]);
+
+                    System.out.printf("%s%-32s %11s | %s%n", getPadding(), item, price, stock);
                 }
             }
 
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t[X] Back to Categories");
+            System.out.println();
+            printLine(separator);
+            printLine("[B] Back to Categories");
+            printLine("[X] Finish Order");
+            System.out.println();
         }
     }
 

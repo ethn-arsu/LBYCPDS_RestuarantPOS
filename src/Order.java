@@ -1,7 +1,7 @@
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Scanner;
 
 public class Order {
 
@@ -15,7 +15,7 @@ public class Order {
 
     // Console formatting
     private static final int CONSOLE_WIDTH = 120;
-    private static final int RECEIPT_WIDTH = 60;
+    private static final int CONTENT_WIDTH = 60;
 
     // Constructor
     public Order(Menu menu, Customer currentCustomer) {
@@ -39,53 +39,63 @@ public class Order {
         System.out.flush();
     }
 
-    // Center a line of text
-    public void printCentered(String text) {
+    // Left margin of content area
+    private String getPadding() {
         int padding = Math.max(
-                0, (CONSOLE_WIDTH - text.length()) / 2
+                0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2
         );
 
-        System.out.println(" ".repeat(padding) + text);
+        return " ".repeat(padding);
     }
 
-    // Center an input prompt
-    public void printCenteredPrompt(String text) {
+    // Print left-aligned text within content area
+    private void printLine(String text) {
+        System.out.println(getPadding() + text);
+    }
+
+    // Center text within content area
+    private void printCentered(String text) {
         int padding = Math.max(
-                0, (CONSOLE_WIDTH - text.length()) / 2
+                0, (CONTENT_WIDTH - text.length()) / 2
         );
 
-        System.out.print(" ".repeat(padding) + text);
-    }
-
-    // Left-align content within the centered receipt
-    public void printReceiptLine(String text) {
-        int padding = Math.max(
-                0, (CONSOLE_WIDTH - RECEIPT_WIDTH) / 2
+        System.out.println(
+                getPadding() + " ".repeat(padding) + text
         );
-
-        System.out.println(" ".repeat(padding) + text);
     }
 
-    // Print a formatted receipt row
-    public void printReceiptRow(String format, Object... args) {
-        String line = String.format(format, args);
-        printReceiptLine(line);
+    // Print an input prompt
+    private void printPrompt(String text) {
+        System.out.print(getPadding() + text);
+    }
+
+    // Format receipt columns
+    private void printReceiptRow(String format, Object... args) {
+        printLine(String.format(format, args));
+    }
+
+    // Format receipt heading
+    private void printReceiptHeading(String text) {
+        printCentered(text);
     }
 
     // Select food items
     public void selectItems() {
+
         int itemCount = 0;
         boolean ordering = true;
 
         clearConsole();
+
         printCentered("========== ORDER TAKING ==========");
         menu.displayMenu(' ');
 
         while (ordering) {
 
-            printCenteredPrompt("Select category or X to finish: ");
+            printPrompt("Select category or X to finish: ");
 
-            char categoryChoice = input.next().toUpperCase().charAt(0);
+            char categoryChoice =
+                    input.next().toUpperCase().charAt(0);
 
             if (categoryChoice == 'X') {
                 break;
@@ -97,23 +107,29 @@ public class Order {
                 case 'A':
                     selectedCategory = "CHICKEN";
                     break;
+
                 case 'B':
                     selectedCategory = "BURGERS";
                     break;
+
                 case 'C':
                     selectedCategory = "MEALS";
                     break;
+
                 case 'D':
                     selectedCategory = "SIDES";
                     break;
+
                 case 'E':
                     selectedCategory = "DESSERTS";
                     break;
+
                 case 'F':
                     selectedCategory = "DRINKS";
                     break;
+
                 default:
-                    printCentered("Invalid category.");
+                    printLine("Invalid category.");
                     continue;
             }
 
@@ -123,12 +139,15 @@ public class Order {
 
             while (true) {
 
-                printCenteredPrompt("Enter food number, B to change category, or X to finish: ");
+                printPrompt(
+                        "Enter food number, B to change category, or X to finish: "
+                );
 
                 String choice = input.next();
 
                 if (choice.equalsIgnoreCase("B")) {
                     clearConsole();
+
                     printCentered("========== ORDER TAKING ==========");
                     menu.displayMenu(' ');
                     break;
@@ -144,7 +163,7 @@ public class Order {
                 try {
                     foodChoice = Integer.parseInt(choice);
                 } catch (NumberFormatException e) {
-                    printCentered("Invalid food selection.");
+                    printLine("Invalid food selection.");
                     continue;
                 }
 
@@ -153,16 +172,19 @@ public class Order {
                 if (itemIndex < 0 ||
                         itemIndex >= menu.foodNames.length) {
 
-                    printCentered("Invalid food selection.");
+                    printLine("Invalid food selection.");
                 }
 
-                else if (!menu.categories[itemIndex].equals(selectedCategory)) {
+                else if (!menu.categories[itemIndex]
+                        .equals(selectedCategory)) {
 
-                    printCentered("Please select an item from this category.");
+                    printLine(
+                            "Please select an item from this category."
+                    );
                 }
 
                 else if (menu.stocks[itemIndex] <= 0) {
-                    printCentered("This item is out of stock.");
+                    printLine("This item is out of stock.");
                 }
 
                 else {
@@ -176,18 +198,21 @@ public class Order {
                     }
 
                     if (alreadySelected) {
-                        printCentered("Item already selected.");
+                        printLine("Item already selected.");
                     }
 
                     else if (itemCount < selectedItems.length) {
                         selectedItems[itemCount] = itemIndex;
                         itemCount++;
 
-                        printCentered(menu.foodNames[itemIndex] + " added to your order.");
+                        printLine(
+                                menu.foodNames[itemIndex] +
+                                        " added to your order."
+                        );
                     }
 
                     else {
-                        printCentered("Maximum items reached.");
+                        printLine("Maximum items reached.");
                     }
                 }
             }
@@ -200,7 +225,10 @@ public class Order {
     public void inputQuantity() {
 
         clearConsole();
-        printCentered("========== FOOD QUANTITY ==========");
+
+        printLine("=".repeat(CONTENT_WIDTH));
+        printCentered("FOOD QUANTITY");
+        printLine("=".repeat(CONTENT_WIDTH));
 
         for (int i = 0; i < selectedItems.length; i++) {
 
@@ -208,9 +236,12 @@ public class Order {
                 int itemIndex = selectedItems[i];
 
                 System.out.println();
-                printCentered("Food: " + menu.foodNames[itemIndex]);
 
-                printCenteredPrompt("Enter quantity: ");
+                printLine(
+                        "Food: " + menu.foodNames[itemIndex]
+                );
+
+                printPrompt("Enter quantity: ");
                 quantities[i] = input.nextInt();
             }
         }
@@ -220,6 +251,7 @@ public class Order {
 
     // Calculate total cost
     public void calculateTotal() {
+
         totalAmount = 0;
 
         for (int i = 0; i < selectedItems.length; i++) {
@@ -227,7 +259,8 @@ public class Order {
             if (selectedItems[i] != -1) {
                 int itemIndex = selectedItems[i];
 
-                totalAmount += menu.prices[itemIndex] * quantities[i];
+                totalAmount +=
+                        menu.prices[itemIndex] * quantities[i];
             }
         }
     }
@@ -238,6 +271,7 @@ public class Order {
         clearConsole();
 
         LocalDateTime now = LocalDateTime.now();
+
         DateTimeFormatter dtf =
                 DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
 
@@ -248,28 +282,53 @@ public class Order {
         String custAddress = customer.getAddress();
         String custEmail = customer.getEmail();
 
-        double totalVat = totalAmount - (totalAmount / 1.12);
+        double totalVat =
+                totalAmount - (totalAmount / 1.12);
 
-        String border = "=".repeat(RECEIPT_WIDTH);
-        String separator = "-".repeat(RECEIPT_WIDTH);
+        String border = "=".repeat(CONTENT_WIDTH);
+        String separator = "-".repeat(CONTENT_WIDTH);
 
         System.out.println();
+
+        printLine(border);
+        printReceiptHeading("PINRITONG MANOK NG KENTUCKY");
+        printReceiptHeading("OFFICIAL E-RECEIPT");
+        printLine(border);
+
         System.out.println();
 
-        printReceiptLine(border);
+        printReceiptRow(
+                "%-20s %39s",
+                "Date:", formattedDate
+        );
 
-        printReceiptRow("%" + RECEIPT_WIDTH + "s", centerReceiptText("PINRITONG MANOK NG KENTUCKY"));
-        printReceiptRow("%" + RECEIPT_WIDTH + "s", centerReceiptText("OFFICIAL E-RECEIPT"));
-        printReceiptLine(border);
-        printReceiptRow("%-20s %39s", "Date:", formattedDate);
-        printReceiptRow("%-20s %39s", "Customer:", custName);
-        printReceiptRow("%-20s %39s", "Contact No.:", custPhone);
-        printReceiptRow("%-20s %39s", "Email:", custEmail);
-        printReceiptLine("Delivery Address:");
-        printReceiptLine(custAddress);
-        printReceiptLine(separator);
-        printReceiptRow("%-32s %6s %20s", "Description", "QTY", "Price");
-        printReceiptLine(separator);
+        printReceiptRow(
+                "%-20s %39s",
+                "Customer:", custName
+        );
+
+        printReceiptRow(
+                "%-20s %39s",
+                "Contact No.:", custPhone
+        );
+
+        printReceiptRow(
+                "%-20s %39s",
+                "Email:", custEmail
+        );
+
+        printLine("Delivery Address:");
+        printLine(custAddress);
+
+        System.out.println();
+        printLine(separator);
+
+        printReceiptRow(
+                "%-32s %6s %20s",
+                "Description", "QTY", "Price"
+        );
+
+        printLine(separator);
 
         boolean hasItems = false;
 
@@ -281,38 +340,48 @@ public class Order {
 
                 String itemName = menu.foodNames[itemIndex];
 
-                String qty = String.format("%02d", quantities[i]);
+                String qty = String.format(
+                        "%02d", quantities[i]
+                );
 
-                double lineTotal = menu.prices[itemIndex] * quantities[i];
+                double lineTotal =
+                        menu.prices[itemIndex] * quantities[i];
 
-                String price = String.format("PHP %.2f", lineTotal);
+                String price = String.format(
+                        "PHP %.2f", lineTotal
+                );
 
-                printReceiptRow("%-32s %6s %20s", itemName, qty, price);
+                printReceiptRow(
+                        "%-32s %6s %20s",
+                        itemName, qty, price
+                );
             }
         }
 
         if (!hasItems) {
-            printReceiptLine("No items ordered.");
+            printLine("No items ordered.");
         }
 
-        printReceiptLine(separator);
-        printReceiptRow("%-39s %20s", "Total:", String.format("PHP %.2f", totalAmount));
-        printReceiptRow("%-39s %20s", "Total VAT:", String.format("PHP %.2f", totalVat));
-        printReceiptLine(border);
-        printReceiptLine(centerReceiptText("4-1234-" + orderID + "-1296"));
-        printReceiptLine(separator);
-    }
+        printLine(separator);
 
-    // Center text within the receipt width
-    public String centerReceiptText(String text) {
+        printReceiptRow(
+                "%-39s %20s",
+                "Total:",
+                String.format("PHP %.2f", totalAmount)
+        );
 
-        if (text.length() >= RECEIPT_WIDTH) {
-            return text;
-        }
+        printReceiptRow(
+                "%-39s %20s",
+                "Total VAT:",
+                String.format("PHP %.2f", totalVat)
+        );
 
-        int leftPadding =
-                (RECEIPT_WIDTH - text.length()) / 2;
+        printLine(border);
 
-        return " ".repeat(leftPadding) + text;
+        printReceiptHeading(
+                "4-1234-" + orderID + "-1296"
+        );
+
+        printLine(separator);
     }
 }
