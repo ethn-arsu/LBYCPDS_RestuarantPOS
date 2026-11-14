@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class Main {
 
-    // Console formatting
     private static final int CONSOLE_WIDTH = 120;
     private static final int CONTENT_WIDTH = 60;
 
@@ -11,65 +10,78 @@ public class Main {
         System.out.flush();
     }
 
-    // Left margin for centered content
     private static String getPadding() {
         int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
-
         return " ".repeat(padding);
     }
 
-    // Print text aligned to the content area
     private static void printLine(String text) {
         System.out.println(getPadding() + text);
     }
 
-    // Center text within the content area
     private static void printCentered(String text) {
         int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
 
         System.out.println(getPadding() + " ".repeat(padding) + text);
     }
 
-    // Display input prompt
     private static void printPrompt(String text) {
         System.out.print(getPadding() + text);
+    }
+
+    private static void pause(Scanner scanner) {
+        System.out.println();
+        printPrompt("Press Enter to continue...");
+        scanner.nextLine();
     }
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Initialize menu and saved customer accounts
         Menu menu = new Menu();
         menu.initializeMenu();
 
         AccountManager accountManager = new AccountManager();
-        Customer currentCustomer = null;
+        Admin admin = new Admin();
 
-        // Login / Register / Exit menu
-        while (currentCustomer == null) {
+        while (true) {
 
             clearConsole();
 
             printLine("=".repeat(CONTENT_WIDTH));
             printCentered("PINRITONG MANOK NG KENTUCKY");
-            printCentered("CUSTOMER ACCESS");
+            printCentered("MAIN MENU");
             printLine("=".repeat(CONTENT_WIDTH));
 
             System.out.println();
-            printLine("[1] Login");
-            printLine("[2] Register");
-            printLine("[3] Exit");
+            printLine("[1] Admin Login");
+            printLine("[2] Customer Login");
+            printLine("[3] Create Account");
+            printLine("[4] Exit");
 
             System.out.println();
             printPrompt("Select option: ");
 
             String choice = scanner.nextLine().trim();
+            Customer currentCustomer = null;
 
             switch (choice) {
 
                 case "1":
-                    // Login to an existing account
+                    // Admin login
+                    boolean loggedIn = admin.adminLogin(scanner);
+
+                    if (loggedIn) {
+                        pause(scanner);
+                        admin.displayAdminMenu(scanner);
+                    } else {
+                        pause(scanner);
+                    }
+                    continue;
+
+                case "2":
+                    // Existing customer login
                     clearConsole();
 
                     printLine("=".repeat(CONTENT_WIDTH));
@@ -84,61 +96,59 @@ public class Main {
                     printPrompt("Enter your password: ");
                     String password = scanner.nextLine();
 
-                    currentCustomer = accountManager.login(
-                            email, password
-                    );
+                    currentCustomer = accountManager.login(email, password);
 
-                    System.out.println();
-
-                    if (currentCustomer != null) {
-                        printCentered("Login successful!");
-                    } else {
+                    if (currentCustomer == null) {
                         printLine("Invalid email or password.");
+                        pause(scanner);
+                        continue;
                     }
 
-                    System.out.println();
-                    printPrompt("Press Enter to continue...");
-                    scanner.nextLine();
+                    printCentered("Login successful!");
+                    pause(scanner);
                     break;
 
-                case "2":
-                    // Register a new customer
+                case "3":
+                    // Register new customer
                     clearConsole();
 
                     currentCustomer = Customer.customerRegistration(accountManager);
 
-                    System.out.println();
-                    printPrompt("Press Enter to continue...");
-                    scanner.nextLine();
+                    pause(scanner);
+
+                    if (currentCustomer == null) {
+                        continue;
+                    }
                     break;
 
-                case "3":
-                    // Exit the application
+                case "4":
                     clearConsole();
                     printCentered("Thank you for using Pinritong Manok ng Kentucky!");
                     return;
 
                 default:
                     printLine("Invalid option. Please try again.");
-
-                    System.out.println();
-                    printPrompt("Press Enter to continue...");
-                    scanner.nextLine();
-                    break;
+                    pause(scanner);
+                    continue;
             }
+
+            // Customer profile
+            clearConsole();
+            currentCustomer.customerDisplayProfile();
+
+            System.out.println();
+            printCentered("Press Enter to proceed to the menu.");
+            scanner.nextLine();
+
+            // Existing order process
+            Order order = new Order(menu, currentCustomer);
+
+            order.selectItems();
+            order.displayOrderSummary();
+
+            // End the current customer session
+            // Other transaction features will be integrated later
+            return;
         }
-
-        // Display customer profile after login/registration
-        clearConsole();
-        currentCustomer.customerDisplayProfile();
-
-        System.out.println();
-        printCentered("Press [Enter] to proceed to the menu.");
-        scanner.nextLine();
-
-        // Begin the existing ordering process
-        Order order = new Order(menu, currentCustomer);
-        order.selectItems();
-        order.displayOrderSummary();
     }
 }
