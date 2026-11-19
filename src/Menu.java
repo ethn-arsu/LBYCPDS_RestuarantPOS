@@ -33,16 +33,43 @@ public class Menu {
     public void initializeMenu() {
 
         foodNames = new String[]{
+
+                // A. CHICKEN
                 "Original Recipe Chicken",
                 "Hot and Crispy Chicken",
-                "Zinger Burger",
                 "Chicken Shots",
+                "Hot Chicken Shots",
                 "Chicken Nuggets",
+
+                // B. BURGERS
+                "PMK Original Burger",
+                "Zinger Burger",
+                "Cheesy Burger",
+                "Double Burger",
+                "Chicken Burger",
+
+                // C. MEALS
                 "Famous Bowl",
+                "Chicken Rice Meal",
+                "Spaghetti Chicken Meal",
+                "Chicken Fillet Meal",
+                "2-Piece Chicken Meal",
+
+                // D. SIDES
                 "Regular Fries",
                 "Mashed Potato",
                 "Coleslaw",
+                "Macaroni Salad",
+                "Buttered Corn",
+
+                // E. DESSERTS
                 "Chocolate Sundae",
+                "Vanilla Sundae",
+                "Caramel Sundae",
+                "Choco Brownie",
+                "Butterscotch Brownie",
+
+                // F. DRINKS
                 "Water",
                 "Iced Tea",
                 "Orange Juice",
@@ -51,19 +78,38 @@ public class Menu {
         };
 
         prices = new double[]{
-                99.00, 105.00, 145.00, 125.00, 85.00,
-                115.00, 55.00, 45.00, 45.00, 50.00,
-                50.00, 55.00, 55.00, 60.00, 60.00
+                // A. CHICKEN
+                99.00, 105.00, 95.00, 99.00, 85.00,
+
+                // B. BURGERS
+                99.00, 145.00, 115.00, 165.00, 105.00,
+
+                // C. MEALS
+                115.00, 135.00, 155.00, 125.00, 185.00,
+
+                // D. SIDES
+                55.00, 45.00, 45.00, 50.00, 40.00,
+
+                // E. DESSERTS
+                50.00, 50.00, 50.00, 45.00, 45.00,
+
+                // F. DRINKS
+                25.00, 50.00, 50.00, 60.00, 60.00
         };
 
         categories = new String[]{
-                "CHICKEN", "CHICKEN", "BURGERS", "CHICKEN",
-                "CHICKEN", "MEALS", "SIDES", "SIDES",
-                "SIDES", "DESSERTS", "DRINKS", "DRINKS",
-                "DRINKS", "DRINKS", "DRINKS"
+                "CHICKEN", "CHICKEN", "CHICKEN", "CHICKEN", "CHICKEN",
+                "BURGERS", "BURGERS", "BURGERS", "BURGERS", "BURGERS",
+                "MEALS", "MEALS", "MEALS", "MEALS", "MEALS",
+                "SIDES", "SIDES", "SIDES", "SIDES", "SIDES",
+                "DESSERTS", "DESSERTS", "DESSERTS", "DESSERTS", "DESSERTS",
+                "DRINKS", "DRINKS", "DRINKS", "DRINKS", "DRINKS"
         };
 
         stocks = new int[]{
+                20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20,
                 20, 20, 20, 20, 20,
                 20, 20, 20, 20, 20,
                 20, 20, 20, 20, 20

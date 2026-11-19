@@ -336,7 +336,9 @@ public class Order {
         printLine("Proceed to E-receipt?");
         printLine("[1] Yes, confirm order");
         printLine("[2] Add more items");
-        printLine("[3] No, cancel order");
+        printLine("[3] Remove items");
+        printLine("[4] Edit items");
+        printLine("[5] No, cancel order");
         System.out.println();
 
         while (true) {
@@ -366,7 +368,7 @@ public class Order {
             if (choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("yes")) {
                 hasPwdDiscount = true;
                 System.out.println();
-                printCentered("20% PWD DISCOUNT AND VAT EXEMPTION SUCCESSFULLY APPLIED.!");
+                printCentered("20% PWD DISCOUNT AND VAT EXEMPTION SUCCESSFULLY APPLIED!");
                 System.out.println();
                 pauseScreen();
                 break;

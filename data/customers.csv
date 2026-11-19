@@ -1,0 +1,3 @@
+customerId,name,email,phone,address,salt,passwordHash
+"00001","Ethan Arsua","ethan_arsua@dlsu.edu.ph","09216764001","Pyongyang, North Korea","5h2VYFYZmvhlknJHB5gm4A==","JecJ03lGzpWyLFxXIJAaJoYFLVOArdRur16SL7+li/I="
+"00002","Ken Rasing","ken_rasing@dlsu.edu.ph","0912345678","Pangasinan Binmaley","JIR82k00CDzIStfkoL/vGw==","shW8ixMEcXSVNGdS3GZpMVM8ZViYTASp7nO8hPJI0r0="

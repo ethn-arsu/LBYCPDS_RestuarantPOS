@@ -103,8 +103,9 @@ public class Admin {
     }
 
     // Existing method retained for future integration
+
+    // TODO: Connect completed administrative features
     public void displayAdminMenu() {
-        // TODO: Connect completed administrative features
     }
 
     // TODO: Monitor customer order queue
