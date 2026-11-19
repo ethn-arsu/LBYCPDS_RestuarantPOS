@@ -13,6 +13,9 @@ public class Order {
     double totalDiscount;
     double totalVat;
     boolean hasPwdDiscount;
+    String status;
+    LocalDateTime placedAt;
+    LocalDateTime completedAt;
     Menu menu;
     Customer customer;
     Scanner input = new Scanner(System.in);
@@ -40,6 +43,9 @@ public class Order {
         totalDiscount = 0;
         totalVat = 0;
         hasPwdDiscount = false;
+        status = "PENDING";
+        placedAt = LocalDateTime.now();
+        completedAt = null;
     }
 
     // Clear terminal screen
