@@ -344,9 +344,4 @@ public class Reports {
             }
         }
     }
-
-    // Receipt generation is outside this assigned role
-    public void generateReceipt() {
-
-    }
 }

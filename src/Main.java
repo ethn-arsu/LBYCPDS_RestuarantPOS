@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
@@ -79,7 +80,7 @@ public class Main {
 
                     if (loggedIn) {
                         pause(scanner);
-                        admin.displayAdminMenu(scanner, orderQueue, reports, menu, transactionList);
+                        admin.displayAdminMenu(scanner, orderQueue, reports, menu, transactionList, algorithm);
                     } else {
                         pause(scanner);
                     }
@@ -128,6 +129,12 @@ public class Main {
 
                 case "4":
                     clearConsole();
+                    reports.generateSessionReport(menu, transactionList);
+                    if(!orderQueue.isEmpty()) {
+                        System.out.println();
+                        printPrompt("Note: " + orderQueue.getSize() + " unprocessed orders remain.");
+                    }
+                    System.out.println();
                     printCentered("Thank you for using Pinritong Manok ng Kentucky!");
                     return;
 
@@ -138,12 +145,30 @@ public class Main {
             }
 
             // Customer profile
-            clearConsole();
-            currentCustomer.customerDisplayProfile();
+            boolean customerLoggedIn = true;
+            while (customerLoggedIn) {
+                clearConsole();
+                currentCustomer.customerDisplayProfile();
 
-            System.out.println();
-            printCentered("Press Enter to proceed to the menu.");
-            scanner.nextLine();
+                System.out.println();
+                printLine("[1] Place Order");
+                printLine("[2] Logout");
+                System.out.println();
+                printPrompt("Select option: ");
+
+                String sessionChoice = scanner.nextLine().trim();
+
+                if(sessionChoice.equals("2")) {
+                    currentCustomer = null;
+                    System.out.println();
+                    printCentered("Logged out successfully.");
+                    pause(scanner);
+                    break;
+                }else if(!sessionChoice.equals("1")) {
+                    printLine("Invalid option. Please try again.");
+                    pause(scanner);
+                    continue;
+                }
 
             boolean newTransaction = true;
             while (newTransaction) {
@@ -186,8 +211,12 @@ public class Main {
                 }
                 if (orderConfirmed) {
                     order.pwdDiscount();
-                    order.finalizeOrder();
+                    order.placedAt = LocalDateTime.now();
+                    order.status = "PENDING";
+                    orderQueue.enqueue(order);
                     order.displayOrderSummary();
+                    System.out.println();
+                    printCentered("Order added to queue! Queue Position: #" + orderQueue.getSize());
                 } else {
                     clearConsole();
                     printLine("=".repeat(CONTENT_WIDTH));
@@ -196,9 +225,10 @@ public class Main {
                 }
 
                 System.out.println();
-                printLine("Would you like to make another transaction?");
-                printLine("[1] Yes (Place another order)");
-                printLine("[2] No (Return to Main menu)");
+                printLine("What would you like to do next?");
+                printLine("[1] Place another order");
+                printLine("[2] Return to Customer Profile");
+                printLine("[3] Logout");
                 System.out.println();
 
                 while (true) {
@@ -210,7 +240,16 @@ public class Main {
                     } else if (another.equals("2")) {
                         newTransaction = false;
                         break;
-                    } else printLine("Invalid option. Please try again.");
+                    } else if (another.equals("3")) {
+                        newTransaction = false;
+                        customerLoggedIn = false;
+                        currentCustomer = null;
+                        System.out.println();
+                        printCentered("Logged out successfully.");
+                        pause(scanner);
+                        break;
+                    }else printLine("Invalid option. Please try again.");
+                    }
                 }
             }
         }

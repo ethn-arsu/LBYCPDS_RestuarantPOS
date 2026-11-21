@@ -98,27 +98,28 @@ public class Admin {
                     break;
                 }
                 case "2": {
+                    clearConsole();
                     processOrders(orderQueue, transactions, menu, input);
                     break;
                 }
                 case "3": {
                     manageInventory(menu, algorithm, input);
-                    break;
+                    continue;
                 }
                 case "4": {
                     manageTransactions(transactions, input);
-                    break;
+                    continue;
                 }
                 case "5": {
                     clearConsole();
                     reports.displayReportsMenu(input, menu, transactions);
-                    break;
+                    continue;
                 }
                 case "6": {
                     System.out.println();
                     printCentered("Admin logged out successfully...");
                     System.out.println();
-                    System.out.println(padding() + "Press Enter to return to Main Menu...");
+                    System.out.print(padding() + "Press Enter to return to Main Menu...");
                     input.nextLine();
                     return;
                 }
@@ -134,10 +135,10 @@ public class Admin {
         }
     }
 
-    //
     public void displayAdminMenu(Scanner scanner, OrderQueue orderQueue) {
         displayAdminMenu(scanner, orderQueue, new Reports(), new Menu(), new TransactionList(), new Algorithm());
     }
+
 
     // Monitor customer order queue
     public void monitorQueue(OrderQueue orderQueue) {
@@ -196,6 +197,17 @@ public class Admin {
         }
     }
 
+    public void manageInventory(Menu menu, Algorithm algorithm, Scanner input) {
+        clearConsole();
+        printLine("=".repeat(CONTENT_WIDTH));
+        printCentered("INVENTORY MANAGEMENT");
+        printLine("=".repeat(CONTENT_WIDTH));
+        System.out.println();
+        printLine("Inventory management module is being integrated by Member 2.");
+        System.out.println();
+        System.out.print(padding() + "Press Enter to return to Admin Dashboard...");
+        input.nextLine();
+    }
     // TODO: Update inventory stocks
     public void updateInventory() {
 
@@ -228,7 +240,7 @@ public class Admin {
                             int orderId = Integer.parseInt(idStr);
                             Order removed = transactionList.removeIdTransaction(orderId);
                             if(removed !=null){
-                                printLine("Transaction #" + orderId + "removed.");
+                                printLine("Transaction #" + orderId + " removed.");
                             }else{
                                 printLine("Transaction #" + orderId + " not found.");
                             }
@@ -258,16 +270,5 @@ public class Admin {
             System.out.print(padding() + "Press Enter to continue...");
             input.nextLine();
         }
-    }
-    public void manageInventory(Menu menu, Algorithm algorithm, Scanner input) {
-        clearConsole();
-        printLine("=".repeat(CONTENT_WIDTH));
-        printCentered("INVENTORY MANAGEMENT");
-        printLine("=".repeat(CONTENT_WIDTH));
-        System.out.println();
-        printLine("Inventory management module is being integrated by Member 2.");
-        System.out.println();
-        System.out.print(padding() + "Press Enter to return to Admin Dashboard...");
-        input.nextLine();
     }
 }
