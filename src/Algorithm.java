@@ -1,5 +1,24 @@
 public class Algorithm {
+    private static final int CONSOLE_WIDTH = 120;
+    private static final int CONTENT_WIDTH = 60;
 
+    public void clearConsole() {
+        System.out.print("\033[H\033[2J\033[3J");
+        System.out.flush();
+    }
+
+    // Left margin of content area
+    private String getPadding() {
+        int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
+        return " ".repeat(padding);
+    }
+
+
+    // Center text
+    private void printCentered(String text) {
+        int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
+        System.out.println(getPadding() + " ".repeat(padding) + text);
+    }
     // TODO: Implement linear search
     public void linearSearch() {
 

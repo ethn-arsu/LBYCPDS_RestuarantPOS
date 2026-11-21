@@ -14,6 +14,7 @@ public class TransactionList {
     private static final String RECEIPTS_FILE_PATH = "data/receipts.csv";
     private static final int CONSOLE_WIDTH = 120;
     private static final int CONTENT_WIDTH = 60;
+
     // Node structure for linked list
     static class Node {
 
@@ -27,26 +28,27 @@ public class TransactionList {
 
     Node head;
 
-    private static String padding() {
-        return " ".repeat((CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
+
+    private static String getPadding() {
+        int padding = Math.max(0, (CONSOLE_WIDTH - CONTENT_WIDTH) / 2);
+        return " ".repeat(padding);
     }
 
     private static void printLine(String text) {
-        System.out.println(padding() + text);
+        System.out.println(getPadding() + text);
     }
 
     private static void printCentered(String text) {
-        int spaces = Math.max(0,
-                (CONTENT_WIDTH - text.length()) / 2);
-
-        System.out.println(padding() + " ".repeat(spaces) + text);
+        int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
+        System.out.println(getPadding() + " ".repeat(padding) + text);
     }
 
+    // Check if the transaction list has no recorded order
     public boolean isEmpty(){
         return head == null;
     }
 
-    // TODO: Add completed transaction
+    // Append a completed order to the end of the linked list
     public void addTransaction(Order order) {
         if(order==null){
             return;
@@ -63,7 +65,7 @@ public class TransactionList {
         curr.next = node;
     }
 
-    // TODO: Remove transaction record
+    // Remove and return the oldest transaction from the front of the list
     public Order removeTransaction() {
         if(head==null){
             return null;
@@ -73,6 +75,7 @@ public class TransactionList {
         return removed;
     }
 
+    // Remove and return the oldest transaction from its order ID
     public Order removeIdTransaction(int orderID) {
         if(head==null){
             return null;
@@ -94,7 +97,7 @@ public class TransactionList {
         return null;
     }
 
-    // TODO: Traverse and display records
+    // Traverse the linked list and display completed transactions
     public void displayTransactions() {
         String border = "=".repeat((CONTENT_WIDTH));
         String separate = "-".repeat((CONTENT_WIDTH));
@@ -136,4 +139,63 @@ public class TransactionList {
             curr = curr.next;
         }
     }
+   private String csvValue(String value){
+        if(value==null){
+            return "";
+        }
+        return "\""+value.replace("\"", "\"\"") + "\"";
+   }
+
+    // Save completed order e-receipt to csv file
+   public void saveReceiptToCSV(Order order){
+        if(order==null){
+            return;
+        }
+        Path path = Paths.get(RECEIPTS_FILE_PATH);
+
+        try{
+            if(path.getParent() != null){
+                Files.createDirectories(path.getParent());
+            }
+            boolean writeHeader = !Files.exists(path) || Files.size(path) ==0;
+            LocalDateTime timeStamp = (order.completedAt != null) ? order.completedAt : LocalDateTime.now();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = dtf.format(timeStamp);
+
+            String custId = (order.customer != null) ? order.customer.getCustomerId() : "GUEST";
+            String custName = (order.customer != null) ? order.customer.getName() : "Guest";
+
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i<order.itemCount; i++){
+                int itemIndex = order.selectedItems[i];
+                if(itemIndex != -1){
+                    if(sb.length()>0){
+                        sb.append("; ");
+                    }
+                    sb.append(order.menu.foodNames[itemIndex]).append(" x").append(order.quantities[i]);
+                }
+            }
+            try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)){
+                if(writeHeader){
+                    writer.write("orderId,dateTime,customerId,customerName,item,subtotal,pwdDiscount,vat,totalAmount");
+                    writer.newLine();
+                }
+                String record = String.join(",",
+                        csvValue(String.valueOf(order.orderID)),
+                        csvValue(formattedDate),
+                        csvValue(custId),
+                        csvValue(custName),
+                        csvValue(sb.toString()),
+                        csvValue(String.format("%.2f", order.subtotal)),
+                        csvValue(String.format("%.2f", order.totalDiscount)),
+                        csvValue(String.format("%.2f", order.totalVat)),
+                        csvValue(String.format("%.2f", order.totalAmount)));
+
+                writer.write(record);
+                writer.newLine();
+            }
+        }catch(IOException e){
+            printLine("Unable to save receipt to CSV (" + e.getMessage() + ").");
+        }
+   }
 }
