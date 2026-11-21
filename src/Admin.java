@@ -162,5 +162,24 @@ public class Admin {
 
     public void manageInventory() {
     }
-    public void manageTransactions() {}
+    public void manageTransactions(TransactionList transactionList, Scanner input) {
+        while(true){
+            clearConsole();
+            transactionList.displayTransactions();
+            System.out.println();
+            printLine("[1] Remove a Transaction by Order ID");
+            printLine("[2] Remove Oldest Transaction");
+            printLine("[3] Back to Admin Dashboard");
+            System.out.println();
+            System.out.print(padding() + "Select option: ");
+            String choice = input.nextLine().trim();
+            switch (choice) {
+                case "1": {
+                    if(transactionList.isEmpty()){
+                        printLine("No transaction records to remove.");
+                    }
+                }
+            }
+        }
+    }
 }

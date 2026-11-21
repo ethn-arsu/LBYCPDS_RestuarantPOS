@@ -130,7 +130,6 @@ public class OrderQueue {
         }
     }
 
-    // TODO: Check if queue is empty
     public void checkEmpty() {
         if(isEmpty()){
             printLine("Order queue is currently empty.");
