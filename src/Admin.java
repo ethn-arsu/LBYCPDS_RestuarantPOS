@@ -221,9 +221,42 @@ public class Admin {
                 case "1": {
                     if(transactionList.isEmpty()){
                         printLine("No transaction records to remove.");
+                    }else {
+                        System.out.print(padding() + "Enter Order ID to remove: ");
+                        String idStr = input.nextLine().trim();
+                        try {
+                            int orderId = Integer.parseInt(idStr);
+                            Order removed = transactionList.removeIdTransaction(orderId);
+                            if(removed !=null){
+                                printLine("Transaction #" + orderId + "removed.");
+                            }else{
+                                printLine("Transaction #" + orderId + " not found.");
+                            }
+                        }catch(NumberFormatException e){
+                            printLine("Invalid Order ID.");
+                        }
                     }
+                    break;
+                }
+                case "2": {
+                    Order removed = transactionList.removeTransaction();
+                    if(removed !=null){
+                        printLine("Removed oldest transaction (#" + removed.orderID + ").");
+                    }else{
+                        printLine("No transaction records to remove.");
+                    }
+                    break;
+                }
+                case "3": {
+                    return;
+                }
+                default: {
+                    printLine("Invalid option. Please try again.");
                 }
             }
+            System.out.println();
+            System.out.print(padding() + "Press Enter to continue...");
+            input.nextLine();
         }
     }
     public void manageInventory(Menu menu, Algorithm algorithm, Scanner input) {
