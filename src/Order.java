@@ -354,6 +354,7 @@ public class Order {
         }
     }
 
+    // Ask if user wants to avail PWD discount
     public void pwdDiscount(){
         clearConsole();
         String border = "=".repeat(CONTENT_WIDTH);
@@ -380,6 +381,7 @@ public class Order {
         calculateTotal();
     }
 
+    // Deduct stock when the admin processes the order from the queue
     public void finalizeOrder(){
         calculateTotal();
         for(int i=0; i<itemCount; i++){
@@ -428,7 +430,7 @@ public class Order {
         );
     }
 
-    // Calculate total cost
+    // Calculate subtotal, PWD discount, VAT, final total
     public void calculateTotal() {
         subtotal = 0;
         totalAmount = 0;

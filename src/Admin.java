@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Admin {
@@ -68,7 +69,7 @@ public class Admin {
     // Display admin menu
     public void displayAdminMenu(Scanner input, OrderQueue orderQueue,
                                  Reports reports, Menu menu,
-                                 TransactionList transactions) {
+                                 TransactionList transactions, Algorithm algorithm) {
 
         while (true) {
             clearConsole();
@@ -97,57 +98,102 @@ public class Admin {
                     break;
                 }
                 case "2": {
-                    processOrders();
+                    processOrders(orderQueue, transactions, menu, input);
                     break;
                 }
                 case "3": {
+                    manageInventory(menu, algorithm, input);
                     break;
                 }
                 case "4": {
+                    manageTransactions(transactions, input);
                     break;
                 }
                 case "5": {
+                    clearConsole();
                     reports.displayReportsMenu(input, menu, transactions);
                     break;
                 }
+                case "6": {
+                    System.out.println();
+                    printCentered("Admin logged out successfully...");
+                    System.out.println();
+                    System.out.println(padding() + "Press Enter to return to Main Menu...");
+                    input.nextLine();
+                    return;
+                }
+                default: {
+                    printLine("Invalid option. Please try again.");
+                }
             }
 
-            if (choice.equals("6")) {
-                printLine("Logging out...");
-                return;
-            }
+            System.out.println();
+            System.out.print(padding() + "Press Enter to continue...");
+            input.nextLine();
 
-            if (choice.matches("[1-4]")) {
-                printLine("Feature under development.");
-
-                System.out.println();
-                System.out.print(padding() + "Press Enter to continue...");
-                input.nextLine();
-
-            } else if (!choice.equals("5")) {
-                printLine("Invalid option.");
-
-                System.out.println();
-                System.out.print(padding() + "Press Enter to continue...");
-                input.nextLine();
-            }
         }
     }
 
-    // Existing method retained for future integration
-
-    // TODO: Connect completed administrative features
-    public void displayAdminMenu(Scanner scanner) {
+    //
+    public void displayAdminMenu(Scanner scanner, OrderQueue orderQueue) {
+        displayAdminMenu(scanner, orderQueue, new Reports(), new Menu(), new TransactionList(), new Algorithm());
     }
 
-    // TODO: Monitor customer order queue
+    // Monitor customer order queue
     public void monitorQueue(OrderQueue orderQueue) {
-
+        orderQueue.displayQueue();
     }
 
-    // TODO: Process customer orders
-    public void processOrders() {
+    // Process customer orders using FIFO
+    public void processOrders(OrderQueue orderQueue, TransactionList transactions, Menu menu, Scanner input) {
+        String border = "=".repeat(CONTENT_WIDTH);
+        printLine(border);
+        printCentered("PROCESS NEXT ORDER");
+        printLine(border);
+        System.out.println();
 
+        if(orderQueue.isEmpty()){
+            printCentered("No pending orders in the queue.");
+            System.out.println();
+            printLine(border);
+            return;
+        }
+        Order nextOrder = orderQueue.peek();
+        String custName = (nextOrder.customer!=null)? nextOrder.customer.getName(): "Guest";
+
+        printLine("Next Order in queue (FIFO): ");
+        printLine("Order ID: " + nextOrder.orderID);
+        printLine("Customer: " + custName);
+        printLine(String.format("Total:        PHP %.2f", nextOrder.totalAmount));
+        System.out.println();
+
+        for(int i = 0; i < nextOrder.itemCount; i++){
+            int itemIndex = nextOrder.selectedItems[i];
+            if(itemIndex != -1){
+                printLine(String.format("  - %-34s x%02d (Stock: %d)",
+                        menu.foodNames[itemIndex], nextOrder.quantities[i], menu.stocks[itemIndex]));
+            }
+        }
+
+        System.out.println();
+        System.out.print(padding() + "Complete this order and record receipt? (Y/N): ");
+        String choice = input.nextLine().trim();
+        if(choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("YES")) {
+            Order processed = orderQueue.dequeue();
+            processed.finalizeOrder();
+            processed.completedAt = LocalDateTime.now();
+            processed.status = "COMPLETED";
+
+            transactions.addTransaction(processed);
+            transactions.saveReceiptToCSV(processed);
+
+            System.out.println();
+            printCentered("Order #" + processed.orderID + " processed!");
+            printLine("Inventory updated & receipt saved to CSV.");
+        }else {
+            System.out.println();
+            printLine("Order remains at front of the queue");
+        }
     }
 
     // TODO: Update inventory stocks
@@ -160,8 +206,6 @@ public class Admin {
 
     }
 
-    public void manageInventory() {
-    }
     public void manageTransactions(TransactionList transactionList, Scanner input) {
         while(true){
             clearConsole();
@@ -181,5 +225,16 @@ public class Admin {
                 }
             }
         }
+    }
+    public void manageInventory(Menu menu, Algorithm algorithm, Scanner input) {
+        clearConsole();
+        printLine("=".repeat(CONTENT_WIDTH));
+        printCentered("INVENTORY MANAGEMENT");
+        printLine("=".repeat(CONTENT_WIDTH));
+        System.out.println();
+        printLine("Inventory management module is being integrated by Member 2.");
+        System.out.println();
+        System.out.print(padding() + "Press Enter to return to Admin Dashboard...");
+        input.nextLine();
     }
 }
