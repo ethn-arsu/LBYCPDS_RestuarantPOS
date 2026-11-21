@@ -1,5 +1,8 @@
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -47,6 +50,41 @@ public class Reports {
         return totalItemsSold;
     }
 
+    // Calculate quantities sold per menu category
+    // Categories retain their original menu order
+    public Map<String, Integer> calculateCategorySales(Menu menu, TransactionList transactions) {
+
+        Map<String, Integer> categorySales = new LinkedHashMap<>();
+
+        if (menu == null || menu.categories == null) {
+            return categorySales;
+        }
+
+        // Initialize each category with zero sales
+        for (String category : menu.categories) {
+
+            if (category != null) {
+                categorySales.putIfAbsent(category, 0);
+            }
+        }
+
+        Algorithm algorithm = new Algorithm();
+
+        int[] itemSales = algorithm.calculateItemSales(menu, transactions);
+
+        // Add item sales to their respective categories
+        for (int i = 0; i < itemSales.length; i++) {
+
+            String category = menu.categories[i];
+
+            if (category != null) {
+                categorySales.put(category, categorySales.getOrDefault(category, 0) + itemSales[i]);
+            }
+        }
+
+        return categorySales;
+    }
+
     // Count unique customers
     public int calculateCustomers(
             TransactionList transactions) {
@@ -56,35 +94,27 @@ public class Reports {
         }
 
         Set<String> customerIdentifiers = new HashSet<>();
-
         TransactionList.Node current = transactions.head;
 
         while (current != null) {
-
             Order order = current.data;
-
             if (order != null) {
-
                 Customer customer = order.customer;
                 String identifier = null;
-
                 if (customer != null) {
-
                     identifier = customer.getCustomerId();
-
-                    if (identifier == null || identifier.trim().isEmpty()) {
-
+                    if (identifier == null
+                            || identifier.trim().isEmpty()) {
                         identifier = customer.getEmail();
                     }
                 }
 
-                // Count an order separately if customer
-                // information is unavailable.
+                // Count the order separately if customer
+                // information is unavailable
                 if (identifier == null || identifier.trim().isEmpty()) {
 
                     identifier = "ORDER-" + order.orderID;
                 }
-
                 customerIdentifiers.add(identifier.trim().toLowerCase());
             }
 
@@ -96,8 +126,7 @@ public class Reports {
 
     // Calculate average service time in minutes
     // Returns -1 if timestamps are unavailable
-    public double calculateAverageTime(
-            TransactionList transactions) {
+    public double calculateAverageTime(TransactionList transactions) {
 
         if (transactions == null) {
             return -1;
@@ -117,12 +146,10 @@ public class Reports {
                 long serviceSeconds = Duration.between(order.placedAt, order.completedAt).getSeconds();
 
                 if (serviceSeconds >= 0) {
-
                     totalServiceSeconds += serviceSeconds;
                     ordersWithTimes++;
                 }
             }
-
             current = current.next;
         }
 
@@ -133,7 +160,66 @@ public class Reports {
         return (totalServiceSeconds / 60.0) / ordersWithTimes;
     }
 
-    // Generate the end-of-session report
+    // Calculate total session duration
+    // Earliest order placement to latest order completion
+    // Returns -1 if timestamps are unavailable
+    public long calculateSessionDurationMinutes(TransactionList transactions) {
+
+        if (transactions == null) {
+            return -1;
+        }
+
+        LocalDateTime earliestPlaced = null;
+        LocalDateTime latestCompleted = null;
+
+        TransactionList.Node current = transactions.head;
+
+        while (current != null) {
+
+            Order order = current.data;
+
+            if (order != null
+                    && order.placedAt != null
+                    && order.completedAt != null
+                    && !order.completedAt.isBefore(
+                    order.placedAt)) {
+
+                if (earliestPlaced == null || order.placedAt.isBefore(earliestPlaced)) {
+                    earliestPlaced = order.placedAt;
+                }
+
+                if (latestCompleted == null || order.completedAt.isAfter(latestCompleted)) {
+                    latestCompleted = order.completedAt;
+                }
+            }
+            current = current.next;
+        }
+
+        if (earliestPlaced == null || latestCompleted == null) {
+            return -1;
+        }
+
+        return Duration.between(earliestPlaced, latestCompleted).toMinutes();
+    }
+
+    // Format session duration
+    private String formatDuration(long totalMinutes) {
+
+        if (totalMinutes < 0) {
+            return "N/A";
+        }
+
+        long hours = totalMinutes / 60;
+        long minutes = totalMinutes % 60;
+
+        if (hours > 0) {
+            return hours + "h " + minutes + "m";
+        }
+
+        return minutes + "m";
+    }
+
+    // Generate end-of-session report
     // TransactionList should contain completed transactions only
     public void generateSessionReport(Menu menu, TransactionList transactions) {
 
@@ -149,12 +235,11 @@ public class Reports {
 
         if (transactions != null) {
 
-            TransactionList.Node current = transactions.head;
+            TransactionList.Node current =
+                    transactions.head;
 
             while (current != null) {
-
                 Order order = current.data;
-
                 if (order != null) {
                     transactionCount++;
                     grossSales += order.subtotal;
@@ -169,6 +254,8 @@ public class Reports {
         int customersServed = calculateCustomers(transactions);
         int itemsSold = calculateItemsSold(menu, transactions);
         double averageServiceMinutes = calculateAverageTime(transactions);
+        long sessionDurationMinutes = calculateSessionDurationMinutes(transactions);
+        Map<String, Integer> categorySales = calculateCategorySales(menu, transactions);
 
         System.out.println();
         printLine(border);
@@ -178,40 +265,60 @@ public class Reports {
         printLine(String.format("%-36s %20d", "Completed Transactions:", transactionCount));
         printLine(String.format("%-36s %20d", "Customers Served:", customersServed));
         printLine(String.format("%-36s %20d", "Total Items Sold:", itemsSold));
+
+        // Category sales breakdown
+        printLine(separator);
+        printLine("SALES BY CATEGORY");
+
+        for (Map.Entry<String, Integer> entry : categorySales.entrySet()) {
+            printLine(String.format("%-36s %20d", entry.getKey() + ":", entry.getValue()));
+        }
+
+        // Financial summary
         printLine(separator);
         printLine(String.format("%-36s %20s", "Gross Sales:", String.format("PHP %.2f", grossSales)));
         printLine(String.format("%-36s %20s", "Discounts Applied:", String.format("PHP %.2f", totalDiscounts)));
         printLine(String.format("%-36s %20s", "VAT Collected:", String.format("PHP %.2f", totalVat)));
         printLine(String.format("%-36s %20s", "Net Sales:", String.format("PHP %.2f", netSales)));
 
+        // Average service time
         if (averageServiceMinutes >= 0) {
             printLine(String.format("%-36s %19.2f min", "Average Service Time:", averageServiceMinutes));
         } else {
             printLine(String.format("%-36s %20s", "Average Service Time:", "N/A"));
         }
 
+        // Total session duration
+        printLine(String.format("%-36s %20s", "Total Session Duration:", formatDuration(sessionDurationMinutes)));
+
         printLine(border);
+
         System.out.println();
 
-        // Show ranking as part of the session report
+        // Display complete item sales ranking
         new Algorithm().rankItems(menu, transactions);
     }
 
-    // Sales reports menu
+    // Sales report menu
     // This can be called from the Admin menu
-    public void displayReportsMenu(
-            Scanner input, Menu menu, TransactionList transactions) {
+    public void displayReportsMenu(Scanner input, Menu menu, TransactionList transactions) {
 
         while (true) {
+
             clearConsole();
+
             String border = "=".repeat(CONTENT_WIDTH);
+
             printLine(border);
             printCentered("SALES REPORTS");
             printLine(border);
+
             System.out.println();
+
             printLine("[1] Item Sales Ranking");
             printLine("[2] End-of-Session Report");
             printLine("[3] Back to Admin Menu");
+
             System.out.println();
             System.out.print(padding() + "Select option: ");
 
@@ -238,7 +345,7 @@ public class Reports {
         }
     }
 
-    // TODO: Receipt generation
+    // Receipt generation is outside this assigned role
     public void generateReceipt() {
 
     }
