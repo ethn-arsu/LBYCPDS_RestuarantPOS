@@ -496,7 +496,7 @@ public class Order {
         System.out.println();
         printLine(separator);
 
-        printReceiptRow("%-32s %6s %20s", "Description", "QTY", "Price");
+        printReceiptRow("%-6s %-32s %20s", "QTY", "Description", "Price");
 
         printLine(separator);
 
@@ -516,7 +516,7 @@ public class Order {
 
                 String price = String.format("PHP %.2f", lineTotal);
 
-                printReceiptRow("%-32s %6s %20s", itemName, qty, price);
+                printReceiptRow("%-6s %-32s %20s", qty, itemName, price);
             }
         }
 

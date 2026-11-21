@@ -28,8 +28,11 @@ public class Admin {
     // Verify administrator credentials
     public boolean adminLogin(Scanner input) {
 
-        String adminUser = System.getenv("PMK_ADMIN_USER");
-        String adminPass = System.getenv("PMK_ADMIN_PASS");
+        String envUser = System.getenv("PMK_ADMIN_USER");
+        String envPass = System.getenv("PMK_ADMIN_PASS");
+
+        String adminUser = (envUser != null && !envUser.isEmpty()) ? envUser : "admin";
+        String adminPass = (envPass != null && !envPass.isEmpty()) ? envUser : "admin123";
 
         clearConsole();
 
@@ -63,7 +66,7 @@ public class Admin {
     }
 
     // Display admin menu
-    public void displayAdminMenu(Scanner input) {
+    public void displayAdminMenu(Scanner input, OrderQueue orderQueue) {
 
         while (true) {
             clearConsole();
@@ -73,10 +76,10 @@ public class Admin {
             printLine("=".repeat(CONTENT_WIDTH));
 
             System.out.println();
-            printLine("[1] View Pending Orders");
+            printLine("[1] View Pending Orders (Queue: " + orderQueue.getSize() + ")");
             printLine("[2] Process Next Order");
-            printLine("[3] View Inventory");
-            printLine("[4] View Transaction Records");
+            printLine("[3] View and Manage Inventory");
+            printLine("[4] View and Manage Transaction Records");
             printLine("[5] View Sales Report");
             printLine("[6] Logout");
 
@@ -85,6 +88,27 @@ public class Admin {
 
             String choice = input.nextLine().trim();
 
+            switch (choice){
+                case "1":{
+                    clearConsole();
+                    monitorQueue(orderQueue);
+                    break;
+                }
+                case "2":{
+                    processOrders();
+                    break;
+                }
+                case "3":{
+
+                    break;
+                }
+                case "4":{
+                    break;
+                }
+                case "5":{
+                    break;
+                }
+            }
             if (choice.equals("6")) {
                 printLine("Logging out...");
                 return;
@@ -105,11 +129,11 @@ public class Admin {
     // Existing method retained for future integration
 
     // TODO: Connect completed administrative features
-    public void displayAdminMenu() {
+    public void displayAdminMenu(Scanner scanner) {
     }
 
     // TODO: Monitor customer order queue
-    public void monitorQueue() {
+    public void monitorQueue(OrderQueue orderQueue) {
 
     }
 
@@ -127,4 +151,8 @@ public class Admin {
     public void displayInventory() {
 
     }
+
+    public void manageInventory() {
+    }
+    public void manageTransactions() {}
 }

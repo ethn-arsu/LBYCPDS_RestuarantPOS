@@ -42,6 +42,11 @@ public class Main {
         Menu menu = new Menu();
         menu.initializeMenu();
 
+        OrderQueue orderQueue = new OrderQueue();
+        TransactionList transactionList = new TransactionList();
+        Reports reports = new Reports();
+        Algorithm algorithm = new Algorithm();
+
         AccountManager accountManager = new AccountManager();
         Admin admin = new Admin();
 

@@ -29,7 +29,7 @@ public class OrderQueue {
         int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
         System.out.println(getPadding() + " ".repeat(padding) + text);
     }
-    // TODO: Initialize queue
+
     public void initializeQueue() {
         queue = new Order[DEFAULT_CAPACITY];
         front = 0;
@@ -58,7 +58,6 @@ public class OrderQueue {
         front = 0;
         rear = size - 1;
     }
-    // TODO: Add order to queue
     public void enqueue(Order order) {
         int no;
         if(order == null) {
@@ -72,7 +71,6 @@ public class OrderQueue {
         size++;
     }
 
-    // TODO: Remove and return first order from queue
     public Order dequeue() {
         if(isEmpty()){
             return null;
@@ -90,7 +88,7 @@ public class OrderQueue {
         }
         return queue[front];
     }
-    // TODO: Display pending orders
+
     public void displayQueue() {
         String border = "=".repeat(CONTENT_WIDTH);
         String separate = "-".repeat(CONTENT_WIDTH);
