@@ -120,6 +120,20 @@ public class TransactionList {
             Order order = curr.data;
             String custName = (order.customer != null) ? order.customer.getName() : "Guest";
             String completeTime = (order.completedAt !=null) ? dtf.format(order.completedAt) : "N/A";
+
+            printLine(String.format("[%d] Order ID: %d | Customer: %s", count, order.orderID, custName));
+            printLine("   Completed: " + completeTime + (order.hasPwdDiscount ? " (PWD Discount)" : ""));
+
+            for(int i=0; i<order.itemCount; i++){
+                int itemIndex = order.selectedItems[i];
+                if(itemIndex != -1){
+                    double lineTotal = order.menu.prices[itemIndex] * order.quantities[i];
+                    printLine(String.format("      - %-30s x%02d  PHP %8.2f", order.menu.foodNames[itemIndex], order.quantities[i], lineTotal));
+                }
+            }
+            printLine(String.format("    Total Paid: PHP %.2f", order.totalAmount));
+            printLine(separate);
+            curr = curr.next;
         }
     }
 }
