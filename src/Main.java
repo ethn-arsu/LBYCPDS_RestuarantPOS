@@ -79,7 +79,7 @@ public class Main {
 
                     if (loggedIn) {
                         pause(scanner);
-                        admin.displayAdminMenu(scanner);
+                        admin.displayAdminMenu(scanner, orderQueue, reports, menu, transactionList);
                     } else {
                         pause(scanner);
                     }

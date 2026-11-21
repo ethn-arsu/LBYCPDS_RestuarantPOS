@@ -32,7 +32,7 @@ public class Admin {
         String envPass = System.getenv("PMK_ADMIN_PASS");
 
         String adminUser = (envUser != null && !envUser.isEmpty()) ? envUser : "admin";
-        String adminPass = (envPass != null && !envPass.isEmpty()) ? envUser : "admin123";
+        String adminPass = (envPass != null && !envPass.isEmpty()) ? envPass : "admin123";
 
         clearConsole();
 
@@ -66,7 +66,9 @@ public class Admin {
     }
 
     // Display admin menu
-    public void displayAdminMenu(Scanner input, OrderQueue orderQueue) {
+    public void displayAdminMenu(Scanner input, OrderQueue orderQueue,
+                                 Reports reports, Menu menu,
+                                 TransactionList transactions) {
 
         while (true) {
             clearConsole();
@@ -88,41 +90,47 @@ public class Admin {
 
             String choice = input.nextLine().trim();
 
-            switch (choice){
-                case "1":{
+            switch (choice) {
+                case "1": {
                     clearConsole();
                     monitorQueue(orderQueue);
                     break;
                 }
-                case "2":{
+                case "2": {
                     processOrders();
                     break;
                 }
-                case "3":{
-
+                case "3": {
                     break;
                 }
-                case "4":{
+                case "4": {
                     break;
                 }
-                case "5":{
+                case "5": {
+                    reports.displayReportsMenu(input, menu, transactions);
                     break;
                 }
             }
+
             if (choice.equals("6")) {
                 printLine("Logging out...");
                 return;
             }
 
-            if (choice.matches("[1-5]")) {
+            if (choice.matches("[1-4]")) {
                 printLine("Feature under development.");
-            } else {
-                printLine("Invalid option.");
-            }
 
-            System.out.println();
-            System.out.print(padding() + "Press Enter to continue...");
-            input.nextLine();
+                System.out.println();
+                System.out.print(padding() + "Press Enter to continue...");
+                input.nextLine();
+
+            } else if (!choice.equals("5")) {
+                printLine("Invalid option.");
+
+                System.out.println();
+                System.out.print(padding() + "Press Enter to continue...");
+                input.nextLine();
+            }
         }
     }
 
