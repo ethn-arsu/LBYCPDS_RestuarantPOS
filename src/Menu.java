@@ -115,9 +115,11 @@ public class Menu {
                 20, 20, 20, 20, 20
         };
     }
-
-    // Display categorized food menu
     public void displayMenu(char choice) {
+        displayMenu(choice, null);
+    }
+    // Display categorized food menu
+    public void displayMenu(char choice, OrderQueue orderQueue) {
 
         if (choice == 'X') {
             return;
@@ -187,13 +189,11 @@ public class Menu {
             for (int i = 0; i < foodNames.length; i++) {
 
                 if (categories[i].equals(selectedCategory)) {
-
+                    int reserved = (orderQueue != null) ? orderQueue.getReservedQuantity(i) : 0;
+                    int available = Math.max(0, stocks[i] - reserved);
                     String item = String.format("[%d] %s", i + 1, foodNames[i]);
-
                     String price = String.format("PHP %.2f", prices[i]);
-
-                    String stock = String.format("Stock: %d", stocks[i]);
-
+                    String stock = String.format("Stock: %d", available);
                     System.out.printf("%s%-32s %11s | %s%n", getPadding(), item, price, stock);
                 }
             }
