@@ -180,42 +180,202 @@ public class Admin {
         System.out.print(padding() + "Complete this order and record receipt? (Y/N): ");
         String choice = input.nextLine().trim();
         if(choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("YES")) {
-            Order processed = orderQueue.dequeue();
-            processed.finalizeOrder();
-            processed.completedAt = LocalDateTime.now();
-            processed.status = "COMPLETED";
+            nextOrder.finalizeOrder();
 
-            transactions.addTransaction(processed);
-            transactions.saveReceiptToCSV(processed);
+            if (menu.saveInventory()){
+                Order processed = orderQueue.dequeue();
 
-            System.out.println();
-            printCentered("Order #" + processed.orderID + " processed!");
-            printLine("Inventory updated & receipt saved to CSV.");
+                processed.completedAt = LocalDateTime.now();
+                processed.status = "COMPLETED";
+
+                transactions.addTransaction(processed);
+                transactions.saveReceiptToCSV(processed);
+
+                System.out.println();
+                printCentered("Order #" + processed.orderID + " processed!");
+                printLine("Inventory updated & receipt saved to CSV.");
+
+            }else {
+                for (int i = 0; i < nextOrder.itemCount; i++) {
+                    int itemIndex = nextOrder.selectedItems[i];
+                    if (itemIndex != -1) {
+                        menu.stocks[itemIndex] += nextOrder.quantities[i];
+                    }
+                }
+
+                printLine("Unable to save inventory. Order was not processed.");
+                printLine("Order remains at front of the queue.");
+            }
+
         }else {
             System.out.println();
             printLine("Order remains at front of the queue");
         }
     }
 
+    // Manage inventory of restaurant
     public void manageInventory(Menu menu, Algorithm algorithm, Scanner input) {
+
+        while (true) {
+            clearConsole();
+
+            printLine("=".repeat(CONTENT_WIDTH));
+            printCentered("INVENTORY MANAGEMENT");
+            printLine("=".repeat(CONTENT_WIDTH));
+
+            System.out.println();
+
+            printLine("[1] View Inventory");
+            printLine("[2] Search Inventory Item");
+            printLine("[3] Restock Item");
+            printLine("[4] Back to Admin Dashboard");
+            System.out.println();
+            System.out.print(padding() + "Select option: ");
+            String choice = input.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                {
+                    clearConsole();
+                    displayInventory(menu);
+                    break;
+                }
+
+                case "2":
+                {
+                    searchInventory(menu, algorithm, input);
+                    break;
+                }
+
+                case "3":
+                {
+                    updateInventory(menu, algorithm, input);
+                    break;
+                }
+
+                case "4":
+                {
+                    return;
+                }
+
+                default:
+                {
+                    printLine("Invalid option.");
+                }
+            }
+
+            System.out.println();
+            System.out.print(padding() + "Press Enter to continue...");
+            input.nextLine();
+        }
+    }
+
+    // Update inventory stocks
+    public void updateInventory(Menu menu, Algorithm algorithm, Scanner input) {
         clearConsole();
+
         printLine("=".repeat(CONTENT_WIDTH));
-        printCentered("INVENTORY MANAGEMENT");
+        printCentered("RESTOCK INVENTORY");
         printLine("=".repeat(CONTENT_WIDTH));
         System.out.println();
-        printLine("Inventory management module is being integrated by Member 2.");
+
+        System.out.print(padding() + "Enter exact item name: ");
+        String itemName = input.nextLine().trim();
+
+        int itemIndex = algorithm.linearSearch(menu, itemName);
+        if (itemIndex == -1) {
+            printLine("Item not found.");
+            return;
+        }
+
+        printLine("Item Name: " + menu.foodNames[itemIndex]);
+        printLine("Current Stock: " + menu.stocks[itemIndex]);
         System.out.println();
-        System.out.print(padding() + "Press Enter to return to Admin Dashboard...");
-        input.nextLine();
+
+        System.out.print(padding() + "Enter quantity to add: ");
+        String quantityInput = input.nextLine().trim();
+
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantityInput);
+        }
+
+        catch (NumberFormatException e) {
+            printLine("Invalid quantity.");
+            return;
+        }
+
+        if (quantity <= 0) {
+            printLine("Quantity must be greater than zero.");
+            return;
+        }
+
+        int oldStock = menu.stocks[itemIndex];
+        if (quantity > Integer.MAX_VALUE - oldStock) {
+            printLine("Stock quantity is too large.");
+            return;
+        }
+
+        menu.stocks[itemIndex] = oldStock + quantity;
+        if (menu.saveInventory()) {
+
+            printLine("Inventory updated and saved successfully.");
+            printLine("New Stock: " + menu.stocks[itemIndex]);
+
+        }
+
+        else {
+
+            menu.stocks[itemIndex] = oldStock;
+            printLine("Unable to save inventory. Update cancelled.");
+        }
     }
-    // TODO: Update inventory stocks
-    public void updateInventory() {
 
+    // Display inventory information
+    public void displayInventory(Menu menu) {
+        String border = "=".repeat(CONTENT_WIDTH);
+        String separator = "-".repeat(CONTENT_WIDTH);
+
+        printLine(border);
+        printCentered("CURRENT INVENTORY");
+        printLine(border);
+        System.out.println();
+
+        printLine(String.format("%-4s %-28s %-12s %6s", "No.", "Item Name", "Category", "Stock"));
+        printLine(separator);
+
+        for (int i = 0; i < menu.foodNames.length; i++) {
+            printLine(String.format("%-4d %-28s %-12s %6d", i + 1, menu.foodNames[i], menu.categories[i], menu.stocks[i]));
+        }
+
+        printLine(separator);
     }
 
-    // TODO: Display inventory information
-    public void displayInventory() {
+    // Search for an inventory item
+    public void searchInventory(Menu menu, Algorithm algorithm, Scanner input) {
 
+        clearConsole();
+
+        printLine("=".repeat(CONTENT_WIDTH));
+        printCentered("SEARCH INVENTORY");
+        printLine("=".repeat(CONTENT_WIDTH));
+        System.out.println();
+
+        System.out.print(padding() + "Enter exact item name: ");
+        String itemName = input.nextLine().trim();
+
+        int itemIndex = algorithm.linearSearch(menu, itemName);
+
+        if (itemIndex == -1) {
+
+            printLine("Item not found.");
+
+        } else {
+
+            printLine("Item Name: " + menu.foodNames[itemIndex]);
+            printLine("Category: " + menu.categories[itemIndex]);
+            printLine("Available Stock: " + menu.stocks[itemIndex]);
+        }
     }
 
     public void manageTransactions(TransactionList transactionList, Scanner input) {
