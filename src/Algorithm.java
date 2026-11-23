@@ -19,9 +19,20 @@ public class Algorithm {
         int padding = Math.max(0, (CONTENT_WIDTH - text.length()) / 2);
         System.out.println(getPadding() + " ".repeat(padding) + text);
     }
-    // TODO: Implement linear search
-    public void linearSearch() {
+    // Searching a menu item using linear search.
+    public int linearSearch(Menu menu, String itemName) {
+        if (menu == null || menu.foodNames == null || itemName == null){
+            return -1;
+        }
 
+        String searchName = itemName.trim();
+        for (int i = 0; i < menu.foodNames.length; i++){
+            if (menu.foodNames[i] != null && menu.foodNames[i].equalsIgnoreCase(searchName)){
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     // Calculate the total quantity sold for each menu item.
@@ -137,8 +148,8 @@ public class Algorithm {
         System.out.println();
 
         if (totalUnitsSold == 0) {
-            System.out.println("No completed sales recorded yet.");
-            System.out.println(border);
+            printLine("No completed sales recorded yet.");
+            printLine(border);
             return;
         }
 
