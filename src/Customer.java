@@ -69,14 +69,14 @@ public class Customer {
     // Compatibility with the current Main.java
     public static Customer customerRegistration() {
         AccountManager manager = new AccountManager();
-        return customerRegistration(manager);
+        Scanner input = new Scanner(System.in);
+        return customerRegistration(manager, input);
     }
 
     // Register a new customer account
     public static Customer customerRegistration(
-            AccountManager manager) {
+            AccountManager manager, Scanner input) {
 
-        Scanner input = new Scanner(System.in);
         String border = "=".repeat(CONTENT_WIDTH);
 
         System.out.println();
