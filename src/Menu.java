@@ -1,5 +1,15 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Menu {
+
+    // Inventory file for stocks
+    private static final String INVENTORY_FILE_PATH = "data/inventory.csv";
 
     // Arrays for menu information
     String[] foodNames;
@@ -115,11 +125,95 @@ public class Menu {
                 20, 20, 20, 20, 20
         };
     }
-    public void displayMenu(char choice) {
-        displayMenu(choice, null);
+
+    // Save current inventory records to CSV
+    public boolean saveInventory() {
+        Path path = Paths.get(INVENTORY_FILE_PATH);
+
+        try {
+            Files.createDirectories(path.getParent());
+            try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+                writer.write("foodName,stock");
+                writer.newLine();
+
+                for (int i = 0; i < foodNames.length; i++) {
+                    writer.write(foodNames[i] + "," + stocks[i]);
+                    writer.newLine();
+                }
+            }
+            return true;
+
+        }
+
+        catch (IOException e) {
+            System.out.println("Unable to save inventory.");
+            return false;
+        }
     }
+
+    // Load inventory records from CSV
+    public void loadInventory() {
+
+        Path path = Paths.get(INVENTORY_FILE_PATH);
+        if (!Files.exists(path)) {
+            saveInventory();
+            return;
+        }
+
+        try {
+            if (Files.size(path) == 0) {
+                saveInventory();
+                return;
+            }
+
+            try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+                String header = reader.readLine();
+                if (header == null || !header.trim().equalsIgnoreCase("foodName,stock")) {
+                    System.out.println("Invalid inventory.csv format.");
+                    return;
+                }
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.isBlank()) {
+                        continue;
+                    }
+
+                    String[] data = line.split(",", 2);
+                    if (data.length != 2) {
+                        continue;
+                    }
+
+                    String itemName = data[0].trim();
+                    try {
+                        int savedStock = Integer.parseInt(data[1].trim());
+                        if (savedStock < 0) {
+                            continue;
+                        }
+
+                        for (int i = 0; i < foodNames.length; i++) {
+                            if (foodNames[i].equalsIgnoreCase(itemName)) {
+                                stocks[i] = savedStock;
+                                break;
+                            }
+                        }
+
+                    }
+
+                    catch (NumberFormatException e) {
+                        System.out.println("Invalid stock value for " + itemName);
+                    }
+                }
+            }
+        }
+
+        catch (IOException e) {
+            System.out.println("Unable to load inventory.");
+        }
+    }
+
     // Display categorized food menu
-    public void displayMenu(char choice, OrderQueue orderQueue) {
+    public void displayMenu(char choice) {
 
         if (choice == 'X') {
             return;
@@ -189,11 +283,13 @@ public class Menu {
             for (int i = 0; i < foodNames.length; i++) {
 
                 if (categories[i].equals(selectedCategory)) {
-                    int reserved = (orderQueue != null) ? orderQueue.getReservedQuantity(i) : 0;
-                    int available = Math.max(0, stocks[i] - reserved);
+
                     String item = String.format("[%d] %s", i + 1, foodNames[i]);
+
                     String price = String.format("PHP %.2f", prices[i]);
-                    String stock = String.format("Stock: %d", available);
+
+                    String stock = String.format("Stock: %d", stocks[i]);
+
                     System.out.printf("%s%-32s %11s | %s%n", getPadding(), item, price, stock);
                 }
             }
