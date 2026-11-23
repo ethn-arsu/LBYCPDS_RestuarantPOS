@@ -334,33 +334,218 @@ public class Order {
     }
     //Checks if customer is done ordering
     public int confirmFinalOrder(){
-        clearConsole();
-        calculateTotal();
-
-        printCentered("REVIEW FINAL ORDER");
-        System.out.println();
-        displayCurrentOrder();
-
-        System.out.println();
-        printLine("Proceed to E-receipt?");
-        printLine("[1] Yes, confirm order");
-        printLine("[2] Add more items");
-        printLine("[3] Remove items");
-        printLine("[4] Edit items");
-        printLine("[5] No, cancel order");
-        System.out.println();
 
         while (true) {
+            clearConsole();
+            calculateTotal();
+
+            printCentered("REVIEW FINAL ORDER");
+            System.out.println();
+            displayCurrentOrder();
+
+            System.out.println();
+            printLine("Proceed to E-receipt?");
+            printLine("[1] Yes, confirm order");
+            printLine("[2] Add more items");
+            printLine("[3] Remove items");
+            printLine("[4] Edit items");
+            printLine("[5] No, cancel order");
+            System.out.println();
+
             printPrompt("Select option: ");
             String choice = input.nextLine().trim();
 
             switch (choice) {
-                case "1" -> {return 1;}
-                case "2" -> {return 2;}
-                case "3" -> {return 3;}
-                default ->  printLine("Invalid option. Please try again.");
+                case "1": {return 1;}
+                case "2": {return 2;}
+                case "3":
+                {
+                    if (hasItems()) {
+                    removeItem();
+                    }
+                    else {
+                        printLine("There are no items to remove.");
+                    }
+                    break;
+                }
+                case "4":
+                {
+                    if (hasItems()) {
+                        editItem();
+                    }
+                    else {
+                        printLine("There are no items to edit.");
+                    }
+
+                    break;
+                }
+                case "5": {return 5;}
+                default: { printLine("Invalid option. Please try again."); }
             }
         }
+    }
+
+    // Remove an item from the current order
+    private void removeItem() {
+
+        clearConsole();
+
+        printLine("=".repeat(CONTENT_WIDTH));
+        printCentered("REMOVE ORDER ITEM");
+        printLine("=".repeat(CONTENT_WIDTH));
+        System.out.println();
+
+        // Display selected items
+        for (int i = 0; i < itemCount; i++) {
+            int itemIndex = selectedItems[i];
+            printLine(String.format("[%d] %s x%d", i + 1, menu.foodNames[itemIndex], quantities[i]));
+        }
+
+        System.out.println();
+        printLine("[0] Cancel");
+        System.out.println();
+
+        printPrompt("Enter item number to remove: ");
+        String choice = input.nextLine().trim();
+
+        int itemPosition;
+        try {
+            itemPosition = Integer.parseInt(choice);
+        } catch (NumberFormatException e) {
+            printLine("Invalid item number.");
+            pauseScreen();
+            return;
+        }
+
+        if (itemPosition == 0) {
+            return;
+        }
+
+        if (itemPosition < 1 || itemPosition > itemCount) {
+            printLine("Invalid item number.");
+            pauseScreen();
+            return;
+        }
+
+        int removeIndex = itemPosition - 1;
+        String removedItem = menu.foodNames[selectedItems[removeIndex]];
+
+        // Shift remaining items to fill the empty position
+        for (int i = removeIndex; i < itemCount - 1; i++) {
+            selectedItems[i] = selectedItems[i + 1];
+            quantities[i] = quantities[i + 1];
+        }
+
+        // Clear the last position
+        itemCount--;
+        selectedItems[itemCount] = -1;
+        quantities[itemCount] = 0;
+
+        calculateTotal();
+
+        System.out.println();
+        printLine(removedItem + " has been removed from your order.");
+
+        pauseScreen();
+    }
+
+    // Edit the quantity of an item in the current order
+    private void editItem() {
+
+        clearConsole();
+
+        printLine("=".repeat(CONTENT_WIDTH));
+        printCentered("EDIT ORDER ITEM");
+        printLine("=".repeat(CONTENT_WIDTH));
+        System.out.println();
+
+        // Display selected items
+        for (int i = 0; i < itemCount; i++) {
+            int itemIndex = selectedItems[i];
+
+            printLine(String.format("[%d] %s x%d",
+                    i + 1, menu.foodNames[itemIndex], quantities[i]));
+        }
+
+        System.out.println();
+        printLine("[0] Cancel");
+        System.out.println();
+
+        printPrompt("Enter item number to edit: ");
+        String choice = input.nextLine().trim();
+
+        int itemPosition;
+
+        try {
+            itemPosition = Integer.parseInt(choice);
+        } catch (NumberFormatException e) {
+            printLine("Invalid item number.");
+            pauseScreen();
+            return;
+        }
+
+        if (itemPosition == 0) {
+            return;
+        }
+
+        if (itemPosition < 1 || itemPosition > itemCount) {
+            printLine("Invalid item number.");
+            pauseScreen();
+            return;
+        }
+
+        int orderIndex = itemPosition - 1;
+        int itemIndex = selectedItems[orderIndex];
+
+        System.out.println();
+        printLine("Selected Item: " + menu.foodNames[itemIndex]);
+        printLine("Current Quantity: " + quantities[orderIndex]);
+
+        // Check stock reserved by other pending orders
+        int reservedQuantity = orderQueue.getReservedQuantity(itemIndex);
+        int availableStock = menu.stocks[itemIndex] - reservedQuantity;
+        printLine("Maximum Available Quantity: " + availableStock);
+        System.out.println();
+
+        printPrompt("Enter new quantity (0 to cancel): ");
+        String quantityInput = input.nextLine().trim();
+
+        int newQuantity;
+        try {
+            newQuantity = Integer.parseInt(quantityInput);
+        } catch (NumberFormatException e) {
+            printLine("Invalid quantity.");
+            pauseScreen();
+            return;
+        }
+
+        if (newQuantity == 0) {
+            return;
+        }
+
+        if (newQuantity < 0) {
+            printLine("Quantity must be greater than zero.");
+            pauseScreen();
+            return;
+        }
+
+        // Check if the new quantity fits the available stock
+        if (newQuantity > availableStock) {
+            printLine("Requested quantity exceeds available stock.");
+            pauseScreen();
+            return;
+        }
+
+        // Update the selected item's quantity
+        quantities[orderIndex] = newQuantity;
+        calculateTotal();
+
+        System.out.println();
+        printLine("Item quantity updated successfully!");
+        printLine("New Quantity: " + quantities[orderIndex]);
+        printLine(String.format("New Item Total: PHP %.2f", menu.prices[itemIndex] * newQuantity));
+
+        pauseScreen();
     }
 
     // Ask if user wants to avail PWD discount
