@@ -95,8 +95,11 @@ public class Order {
         return itemCount>0;
     }
 
-    // Select food items
     public void selectItems() {
+        selectItems(null);
+    }
+    // Select food items
+    public void selectItems(OrderQueue orderQueue) {
 
         boolean ordering = true;
 
@@ -108,14 +111,17 @@ public class Order {
 
             printPrompt("Select category or X to finish: ");
             String categoryInput = input.nextLine().trim().toUpperCase();
-            char categoryChoice = categoryInput.charAt(0);
-
-            if (categoryChoice == 'X') {
-                break;
+            if (categoryInput.length() != 1){
+                printLine("Invalid category.");
+                pauseScreen();
+                continue;
             }
 
+            char categoryChoice = categoryInput.charAt(0);
+            if(categoryChoice == 'X'){
+                break;
+            }
             String selectedCategory = "";
-
             switch (categoryChoice) {
                 case 'A':
                     selectedCategory = "CHICKEN";
@@ -137,7 +143,6 @@ public class Order {
                     break;
                 default:
                     printLine("Invalid category.");
-                    input.nextLine();
                     pauseScreen();
                     continue;
             }

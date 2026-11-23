@@ -52,7 +52,7 @@ public class OrderQueue {
     public void expandQueue(){
         Order[] newQueue = new Order[queue.length * 2];
         for(int i = 0; i < size; i++){
-            newQueue[i] = queue[(front+1)%queue.length];
+            newQueue[i] = queue[(front+i)%queue.length];
         }
         queue = newQueue;
         front = 0;

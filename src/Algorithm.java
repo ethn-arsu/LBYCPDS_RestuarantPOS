@@ -131,9 +131,9 @@ public class Algorithm {
         String border = "=".repeat(CONTENT_WIDTH);
         String separator = "-".repeat(CONTENT_WIDTH);
 
-        System.out.println(border);
-        System.out.printf("%" + ((CONTENT_WIDTH + "ITEM SALES RANKING".length()) / 2) + "s%n", "ITEM SALES RANKING");
-        System.out.println(border);
+        printLine(border);
+        printCentered("ITEM SALES RANKING");
+        printLine(border);
         System.out.println();
 
         if (totalUnitsSold == 0) {
