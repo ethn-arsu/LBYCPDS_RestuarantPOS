@@ -42,6 +42,7 @@ public class Main {
 
         Menu menu = new Menu();
         menu.initializeMenu();
+        menu.loadInventory();
 
         OrderQueue orderQueue = new OrderQueue();
         TransactionList transactionList = new TransactionList();
@@ -118,7 +119,7 @@ public class Main {
                     // Register new customer
                     clearConsole();
 
-                    currentCustomer = Customer.customerRegistration(accountManager);
+                    currentCustomer = Customer.customerRegistration(accountManager, scanner);
 
                     pause(scanner);
 
@@ -172,7 +173,7 @@ public class Main {
 
             boolean newTransaction = true;
             while (newTransaction) {
-                Order order = new Order(menu, currentCustomer);
+                Order order = new Order(menu, currentCustomer, orderQueue, scanner);
                 boolean orderConfirmed = false;
                 boolean orderCancelled = false;
 
