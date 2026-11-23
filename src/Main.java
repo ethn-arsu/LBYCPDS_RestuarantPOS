@@ -171,85 +171,85 @@ public class Main {
                     continue;
                 }
 
-            boolean newTransaction = true;
-            while (newTransaction) {
-                Order order = new Order(menu, currentCustomer, orderQueue, scanner);
-                boolean orderConfirmed = false;
-                boolean orderCancelled = false;
+                boolean newTransaction = true;
+                while (newTransaction) {
+                    Order order = new Order(menu, currentCustomer, orderQueue, scanner, transactionList);
+                    boolean orderConfirmed = false;
+                    boolean orderCancelled = false;
 
-                while (!orderConfirmed && !orderCancelled) {
-                    order.selectItems();
+                    while (!orderConfirmed && !orderCancelled) {
+                        order.selectItems();
 
-                    if (!order.hasItems()) {
+                        if (!order.hasItems()) {
+                            clearConsole();
+                            printLine("=".repeat(CONTENT_WIDTH));
+                            printCentered("NO ITEMS SELECTED");
+                            printLine("=".repeat(CONTENT_WIDTH));
+                            System.out.println();
+                            printLine("Your cart is currently empty.");
+                            printLine("[1] Return to menu to order");
+                            printLine("[2] Cancel transaction");
+                            System.out.println();
+
+                            while (true) {
+                                printPrompt("Select option: ");
+                                String emptyChoice = scanner.nextLine().trim();
+                                if (emptyChoice.equals("1")) {
+                                    break;
+                                } else if (emptyChoice.equals("2")) {
+                                    orderCancelled = true;
+                                    break;
+                                } else printLine("Invalid option. Please try again.");
+                            }
+                        } else {
+                            int confirm = order.confirmFinalOrder();
+                            if (confirm == 1) {
+                                orderConfirmed = true;
+                            } else if (confirm == 2) {
+                                continue;
+                            } else orderCancelled = true;
+                        }
+                    }
+                    if (orderConfirmed) {
+                        order.pwdDiscount();
+                        order.placedAt = LocalDateTime.now();
+                        order.status = "PENDING";
+                        orderQueue.enqueue(order);
+                        order.displayOrderSummary();
+                        System.out.println();
+                        printCentered("Order added to queue! Queue Position: #" + orderQueue.getSize());
+                    } else {
                         clearConsole();
                         printLine("=".repeat(CONTENT_WIDTH));
-                        printCentered("NO ITEMS SELECTED");
+                        printCentered("Order cancelled. No e-receipt generated.");
                         printLine("=".repeat(CONTENT_WIDTH));
-                        System.out.println();
-                        printLine("Your cart is currently empty.");
-                        printLine("[1] Return to menu to order");
-                        printLine("[2] Cancel transaction");
-                        System.out.println();
-
-                        while (true) {
-                            printPrompt("Select option: ");
-                            String emptyChoice = scanner.nextLine().trim();
-                            if (emptyChoice.equals("1")) {
-                                break;
-                            } else if (emptyChoice.equals("2")) {
-                                orderCancelled = true;
-                                break;
-                            } else printLine("Invalid option. Please try again.");
-                        }
-                    } else {
-                        int confirm = order.confirmFinalOrder();
-                        if (confirm == 1) {
-                            orderConfirmed = true;
-                        } else if (confirm == 2) {
-                            continue;
-                        } else orderCancelled = true;
                     }
-                }
-                if (orderConfirmed) {
-                    order.pwdDiscount();
-                    order.placedAt = LocalDateTime.now();
-                    order.status = "PENDING";
-                    orderQueue.enqueue(order);
-                    order.displayOrderSummary();
+
                     System.out.println();
-                    printCentered("Order added to queue! Queue Position: #" + orderQueue.getSize());
-                } else {
-                    clearConsole();
-                    printLine("=".repeat(CONTENT_WIDTH));
-                    printCentered("Order cancelled. No e-receipt generated.");
-                    printLine("=".repeat(CONTENT_WIDTH));
-                }
+                    printLine("What would you like to do next?");
+                    printLine("[1] Place another order");
+                    printLine("[2] Return to Customer Profile");
+                    printLine("[3] Logout");
+                    System.out.println();
 
-                System.out.println();
-                printLine("What would you like to do next?");
-                printLine("[1] Place another order");
-                printLine("[2] Return to Customer Profile");
-                printLine("[3] Logout");
-                System.out.println();
-
-                while (true) {
-                    printPrompt("Select option: ");
-                    String another = scanner.nextLine().trim();
-                    if (another.equals("1")) {
-                        newTransaction = true;
-                        break;
-                    } else if (another.equals("2")) {
-                        newTransaction = false;
-                        break;
-                    } else if (another.equals("3")) {
-                        newTransaction = false;
-                        customerLoggedIn = false;
-                        currentCustomer = null;
-                        System.out.println();
-                        printCentered("Logged out successfully.");
-                        pause(scanner);
-                        break;
-                    }else printLine("Invalid option. Please try again.");
+                    while (true) {
+                        printPrompt("Select option: ");
+                        String another = scanner.nextLine().trim();
+                        if (another.equals("1")) {
+                            newTransaction = true;
+                            break;
+                        } else if (another.equals("2")) {
+                            newTransaction = false;
+                            break;
+                        } else if (another.equals("3")) {
+                            newTransaction = false;
+                            customerLoggedIn = false;
+                            currentCustomer = null;
+                            System.out.println();
+                            printCentered("Logged out successfully.");
+                            pause(scanner);
+                            break;
+                        }else printLine("Invalid option. Please try again.");
                     }
                 }
             }

@@ -19,17 +19,25 @@ public class Order {
     Menu menu;
     Customer customer;
     OrderQueue orderQueue;
+    TransactionList transactions;
     Scanner input;
 
     // Console formatting
     private static final int CONSOLE_WIDTH = 120;
     private static final int CONTENT_WIDTH = 60;
 
-    // Constructor
+    // Constructor retained for compatibility with existing callers.
     public Order(Menu menu, Customer currentCustomer, OrderQueue orderQueue, Scanner input) {
+        this(menu, currentCustomer, orderQueue, input, null);
+    }
+
+    // Constructor with access to completed session transactions.
+    public Order(Menu menu, Customer currentCustomer, OrderQueue orderQueue,
+                 Scanner input, TransactionList transactions) {
         this.menu = menu;
         this.customer = currentCustomer;
         this.orderQueue = orderQueue;
+        this.transactions = transactions;
         this.input = input;
         this.orderID = (int) (Math.random() * 90000) + 10000;
         this.itemCount = 0;
@@ -107,7 +115,7 @@ public class Order {
 
             clearConsole();
             printCentered("========== ORDER TAKING ==========");
-            menu.displayMenu(' ');
+            menu.displayMenu(' ', transactions);
 
             printPrompt("Select category or X to finish: ");
             String categoryInput = input.nextLine().trim().toUpperCase();
@@ -120,6 +128,13 @@ public class Order {
 
             if (categoryChoice == 'X') {
                 break;
+            }
+
+            if (categoryChoice == 'G') {
+                clearConsole();
+                menu.displayPopularItems(transactions);
+                pauseScreen();
+                continue;
             }
 
             String selectedCategory = "";
@@ -221,16 +236,21 @@ public class Order {
                 printCentered("FOOD QUANTITY");
                 printLine("=".repeat(CONTENT_WIDTH));
 
+                int currentQuantity = (existingIndex == -1) ? 0 : quantities[existingIndex];
+                int reservedQuantity = orderQueue.getReservedQuantity(itemIndex);
+                int availableForAdditional = menu.stocks[itemIndex]
+                        - reservedQuantity - currentQuantity;
+
                 System.out.println();
                 printLine("Food: " + menu.foodNames[itemIndex]);
                 printLine(String.format("Price: PHP %.2f", menu.prices[itemIndex]));
-                printLine("Available stock: " + menu.stocks[itemIndex]);
+                printLine("Available quantity for this order: " + availableForAdditional);
 
                 int quantity;
 
                 while (true) {
 
-                    printPrompt("Enter quantity: ");
+                    printPrompt("Enter quantity to add: ");
                     String quantityInput = input.nextLine().trim();
 
                     try {
@@ -245,13 +265,6 @@ public class Order {
                         continue;
                     }
 
-                    int currentQuantity = 0;
-
-                    if (existingIndex != -1) {
-                        currentQuantity = quantities[existingIndex];
-                    }
-
-                    int reservedQuantity = orderQueue.getReservedQuantity(itemIndex);
                     if (currentQuantity + quantity + reservedQuantity >
                             menu.stocks[itemIndex]) {
 
@@ -361,7 +374,7 @@ public class Order {
                 case "3":
                 {
                     if (hasItems()) {
-                    removeItem();
+                        removeItem();
                     }
                     else {
                         printLine("There are no items to remove.");

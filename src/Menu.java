@@ -214,8 +214,18 @@ public class Menu {
 
     // Display categorized food menu
     public void displayMenu(char choice) {
+        displayMenu(choice, null);
+    }
+
+    // Display the menu, with session sales data when available
+    public void displayMenu(char choice, TransactionList transactions) {
 
         if (choice == 'X') {
+            return;
+        }
+
+        if (choice == 'G') {
+            displayPopularItems(transactions);
             return;
         }
 
@@ -237,6 +247,7 @@ public class Menu {
             printLine("[D] Sides");
             printLine("[E] Desserts");
             printLine("[F] Drinks");
+            printLine("[G] Most and Least Ordered Items");
             printLine("[X] Finish Order");
 
             System.out.println();
@@ -302,13 +313,76 @@ public class Menu {
         }
     }
 
-    // TODO: Display most and least ordered items
-    public void displayPopularItems() {
+    // Display the three most and least ordered items based on completed orders.
+    // Items with zero sales are included in the least-ordered section.
+    public void displayPopularItems(TransactionList transactions) {
+        Algorithm algorithm = new Algorithm();
+        int[] itemSales = algorithm.calculateItemSales(this, transactions);
+        int totalSales = 0;
+        for (int quantity : itemSales) {
+            totalSales += quantity;
+        }
 
+        String border = "=".repeat(CONTENT_WIDTH);
+        String separator = "-".repeat(CONTENT_WIDTH);
+        System.out.println();
+        printLine(border);
+        printCentered("MOST AND LEAST ORDERED ITEMS");
+        printLine(border);
+        System.out.println();
+
+        if (totalSales == 0) {
+            printLine("No completed sales yet.");
+            printLine("Popularity statistics will appear after orders are processed.");
+            printLine(border);
+            return;
+        }
+
+        int[] sortedIndexes = algorithm.sortItems(itemSales);
+        printLine("MOST ORDERED ITEMS");
+        printLine(String.format("%-5s %-38s %10s", "Rank", "Item", "Units Sold"));
+        printLine(separator);
+
+        int shown = 0;
+        int previousSales = -1;
+        int rank = 0;
+        for (int i = 0; i < sortedIndexes.length && shown < 3; i++) {
+            int itemIndex = sortedIndexes[i];
+            int quantity = itemSales[itemIndex];
+            if (quantity <= 0) {
+                break;
+            }
+            if (quantity != previousSales) {
+                rank = i + 1;
+                previousSales = quantity;
+            }
+            printLine(String.format("%-5d %-38s %10d", rank, foodNames[itemIndex], quantity));
+            shown++;
+        }
+
+        System.out.println();
+        printLine("LEAST ORDERED ITEMS");
+        printLine(String.format("%-5s %-38s %10s", "Rank", "Item", "Units Sold"));
+        printLine(separator);
+
+        shown = 0;
+        previousSales = -1;
+        rank = 0;
+        for (int i = sortedIndexes.length - 1; i >= 0 && shown < 3; i--) {
+            int itemIndex = sortedIndexes[i];
+            int quantity = itemSales[itemIndex];
+            if (quantity != previousSales) {
+                rank = sortedIndexes.length - i;
+                previousSales = quantity;
+            }
+            printLine(String.format("%-5d %-38s %10d", rank, foodNames[itemIndex], quantity));
+            shown++;
+        }
+        printLine(border);
     }
 
-    // TODO: Check food availability
-    public void checkStock() {
-
+    // Compatibility method for callers that do not have session transactions.
+    public void displayPopularItems() {
+        displayPopularItems(null);
     }
 }

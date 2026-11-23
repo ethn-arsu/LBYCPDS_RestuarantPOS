@@ -1,12 +1,34 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
 public class Reports {
+
+    // Inventory movements are kept in memory for the current session only.
+    private static class InventoryMovement {
+        String itemName;
+        int quantityChange; // positive = restock; negative = sales deduction
+
+        InventoryMovement(String itemName, int quantityChange) {
+            this.itemName = itemName;
+            this.quantityChange = quantityChange;
+        }
+    }
+
+    private final List<InventoryMovement> inventoryMovements = new ArrayList<>();
+
+    public void recordInventoryAdjustment(String itemName, int quantityChange) {
+        if (itemName == null || itemName.trim().isEmpty() || quantityChange == 0) {
+            return;
+        }
+        inventoryMovements.add(new InventoryMovement(itemName.trim(), quantityChange));
+    }
 
     private static final int CONSOLE_WIDTH = 120;
     private static final int CONTENT_WIDTH = 60;
@@ -219,6 +241,55 @@ public class Reports {
         return minutes + "m";
     }
 
+    // Summarize stock additions and deductions recorded during the session.
+    private void displayInventoryAdjustments() {
+        String separator = "-".repeat(CONTENT_WIDTH);
+        printLine(separator);
+        printLine("INVENTORY ADJUSTMENTS");
+
+        if (inventoryMovements.isEmpty()) {
+            printLine("No inventory movements recorded.");
+            return;
+        }
+
+        Map<String, Integer> restockedByItem = new LinkedHashMap<>();
+        Map<String, Integer> soldByItem = new LinkedHashMap<>();
+        int totalRestocked = 0;
+        int totalDeducted = 0;
+
+        for (InventoryMovement movement : inventoryMovements) {
+            if (movement.quantityChange > 0) {
+                restockedByItem.put(movement.itemName,
+                        restockedByItem.getOrDefault(movement.itemName, 0) + movement.quantityChange);
+                totalRestocked += movement.quantityChange;
+            } else {
+                int deducted = -movement.quantityChange;
+                soldByItem.put(movement.itemName,
+                        soldByItem.getOrDefault(movement.itemName, 0) + deducted);
+                totalDeducted += deducted;
+            }
+        }
+
+        printLine(String.format("%-28s %8s %8s %8s", "Item", "Added", "Sold", "Net"));
+        printLine(separator);
+
+        for (String itemName : restockedByItem.keySet()) {
+            int added = restockedByItem.getOrDefault(itemName, 0);
+            int sold = soldByItem.getOrDefault(itemName, 0);
+            printLine(String.format("%-28s %8d %8d %8d", itemName, added, sold, added - sold));
+        }
+        for (String itemName : soldByItem.keySet()) {
+            if (!restockedByItem.containsKey(itemName)) {
+                int sold = soldByItem.getOrDefault(itemName, 0);
+                printLine(String.format("%-28s %8d %8d %8d", itemName, 0, sold, -sold));
+            }
+        }
+
+        printLine(separator);
+        printLine(String.format("%-28s %8d %8d %8d", "TOTAL", totalRestocked,
+                totalDeducted, totalRestocked - totalDeducted));
+    }
+
     // Generate end-of-session report
     // TransactionList should contain completed transactions only
     public void generateSessionReport(Menu menu, TransactionList transactions) {
@@ -281,6 +352,9 @@ public class Reports {
         printLine(String.format("%-36s %20s", "VAT Collected:", String.format("PHP %.2f", totalVat)));
         printLine(String.format("%-36s %20s", "Net Sales:", String.format("PHP %.2f", netSales)));
 
+        // Inventory movement summary (sales deductions and restocks)
+        displayInventoryAdjustments();
+
         // Average service time
         if (averageServiceMinutes >= 0) {
             printLine(String.format("%-36s %19.2f min", "Average Service Time:", averageServiceMinutes));
@@ -295,7 +369,10 @@ public class Reports {
 
         System.out.println();
 
-        // Display complete item sales ranking
+        // Display the most and least ordered items, then the complete ranking.
+        if (menu != null) {
+            menu.displayPopularItems(transactions);
+        }
         new Algorithm().rankItems(menu, transactions);
     }
 

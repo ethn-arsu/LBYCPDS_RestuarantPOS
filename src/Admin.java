@@ -99,11 +99,11 @@ public class Admin {
                 }
                 case "2": {
                     clearConsole();
-                    processOrders(orderQueue, transactions, menu, input);
+                    processOrders(orderQueue, transactions, menu, input, reports);
                     break;
                 }
                 case "3": {
-                    manageInventory(menu, algorithm, input);
+                    manageInventory(menu, algorithm, input, reports);
                     continue;
                 }
                 case "4": {
@@ -145,8 +145,14 @@ public class Admin {
         orderQueue.displayQueue();
     }
 
-    // Process customer orders using FIFO
+    // Compatibility overload for callers without a session report tracker.
     public void processOrders(OrderQueue orderQueue, TransactionList transactions, Menu menu, Scanner input) {
+        processOrders(orderQueue, transactions, menu, input, null);
+    }
+
+    // Process customer orders using FIFO
+    public void processOrders(OrderQueue orderQueue, TransactionList transactions, Menu menu,
+                              Scanner input, Reports reports) {
         String border = "=".repeat(CONTENT_WIDTH);
         printLine(border);
         printCentered("PROCESS NEXT ORDER");
@@ -191,6 +197,16 @@ public class Admin {
                 transactions.addTransaction(processed);
                 transactions.saveReceiptToCSV(processed);
 
+                if (reports != null) {
+                    for (int i = 0; i < processed.itemCount; i++) {
+                        int itemIndex = processed.selectedItems[i];
+                        if (itemIndex != -1 && processed.quantities[i] > 0) {
+                            reports.recordInventoryAdjustment(menu.foodNames[itemIndex],
+                                    -processed.quantities[i]);
+                        }
+                    }
+                }
+
                 System.out.println();
                 printCentered("Order #" + processed.orderID + " processed!");
                 printLine("Inventory updated & receipt saved to CSV.");
@@ -213,8 +229,13 @@ public class Admin {
         }
     }
 
-    // Manage inventory of restaurant
+    // Compatibility overload for callers without an inventory movement tracker.
     public void manageInventory(Menu menu, Algorithm algorithm, Scanner input) {
+        manageInventory(menu, algorithm, input, null);
+    }
+
+    // Manage inventory of restaurant
+    public void manageInventory(Menu menu, Algorithm algorithm, Scanner input, Reports reports) {
 
         while (true) {
             clearConsole();
@@ -249,7 +270,7 @@ public class Admin {
 
                 case "3":
                 {
-                    updateInventory(menu, algorithm, input);
+                    updateInventory(menu, algorithm, input, reports);
                     break;
                 }
 
@@ -270,8 +291,13 @@ public class Admin {
         }
     }
 
-    // Update inventory stocks
+    // Compatibility overload for callers without an inventory movement tracker.
     public void updateInventory(Menu menu, Algorithm algorithm, Scanner input) {
+        updateInventory(menu, algorithm, input, null);
+    }
+
+    // Update inventory stocks
+    public void updateInventory(Menu menu, Algorithm algorithm, Scanner input, Reports reports) {
         clearConsole();
 
         printLine("=".repeat(CONTENT_WIDTH));
@@ -319,6 +345,9 @@ public class Admin {
         menu.stocks[itemIndex] = oldStock + quantity;
         if (menu.saveInventory()) {
 
+            if (reports != null) {
+                reports.recordInventoryAdjustment(menu.foodNames[itemIndex], quantity);
+            }
             printLine("Inventory updated and saved successfully.");
             printLine("New Stock: " + menu.stocks[itemIndex]);
 
