@@ -18,16 +18,19 @@ public class Order {
     LocalDateTime completedAt;
     Menu menu;
     Customer customer;
-    Scanner input = new Scanner(System.in);
+    OrderQueue orderQueue;
+    Scanner input;
 
     // Console formatting
     private static final int CONSOLE_WIDTH = 120;
     private static final int CONTENT_WIDTH = 60;
 
     // Constructor
-    public Order(Menu menu, Customer currentCustomer) {
+    public Order(Menu menu, Customer currentCustomer, OrderQueue orderQueue, Scanner input) {
         this.menu = menu;
         this.customer = currentCustomer;
+        this.orderQueue = orderQueue;
+        this.input = input;
         this.orderID = (int) (Math.random() * 90000) + 10000;
         this.itemCount = 0;
 
@@ -95,11 +98,8 @@ public class Order {
         return itemCount>0;
     }
 
-    public void selectItems() {
-        selectItems(null);
-    }
     // Select food items
-    public void selectItems(OrderQueue orderQueue) {
+    public void selectItems() {
 
         boolean ordering = true;
 
@@ -111,17 +111,19 @@ public class Order {
 
             printPrompt("Select category or X to finish: ");
             String categoryInput = input.nextLine().trim().toUpperCase();
-            if (categoryInput.length() != 1){
+            if (categoryInput.length() != 1) {
                 printLine("Invalid category.");
                 pauseScreen();
                 continue;
             }
-
             char categoryChoice = categoryInput.charAt(0);
-            if(categoryChoice == 'X'){
+
+            if (categoryChoice == 'X') {
                 break;
             }
+
             String selectedCategory = "";
+
             switch (categoryChoice) {
                 case 'A':
                     selectedCategory = "CHICKEN";
@@ -143,6 +145,7 @@ public class Order {
                     break;
                 default:
                     printLine("Invalid category.");
+                    input.nextLine();
                     pauseScreen();
                     continue;
             }
@@ -248,7 +251,8 @@ public class Order {
                         currentQuantity = quantities[existingIndex];
                     }
 
-                    if (currentQuantity + quantity >
+                    int reservedQuantity = orderQueue.getReservedQuantity(itemIndex);
+                    if (currentQuantity + quantity + reservedQuantity >
                             menu.stocks[itemIndex]) {
 
                         printLine("Requested quantity exceeds available stock.");
